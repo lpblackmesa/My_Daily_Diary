@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">My Daily Diary</string>
+    <string name="open_nav">Open Navigation Drawer</string>
+    <string name="close_nav">Close Navigation Drawer</string>
+    <string name="notes">Notes</string>
+    <string name="calendar">Calendar</string>
+    <string name="achievements">Achievements</string>
+
+
 </resources>
