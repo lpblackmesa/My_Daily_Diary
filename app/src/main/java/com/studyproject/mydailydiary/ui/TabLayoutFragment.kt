@@ -57,6 +57,14 @@ class TabLayoutFragment : Fragment() {
             //устанавливаем иконки и текст в TabLayout
                     tab.setIcon(tabIconList[pos])
                     tab.setText(tabTextList[pos])
+                        // установка иконки-бэйджа при необходимости
+            //Удалить бейджи можно методом tab.removeBadge()
+            if (pos == 2) {
+                val badge = tab.getOrCreateBadge()
+                badge.number = 1
+            }
+
+
             }.attach()
 
 

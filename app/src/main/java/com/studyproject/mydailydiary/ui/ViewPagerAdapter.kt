@@ -5,9 +5,13 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class ViewPagerAdapter(fragment : Fragment) : FragmentStateAdapter(fragment) {
+
+    //переопределение количества элементов
     override fun getItemCount(): Int  = 3
 
     override fun createFragment(position: Int): Fragment {
+
+        //возвращение фрагментов в зависимости от позиции
          return  when (position) {
 
 //             0 -> NotesFragment()

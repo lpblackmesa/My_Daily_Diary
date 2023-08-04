@@ -5,6 +5,14 @@
     <string name="notes">Notes</string>
     <string name="calendar">Calendar</string>
     <string name="achievements">Achievements</string>
+    <string name="skip_text">Skip</string>
+    <string name="onboarding_description_1">There is 1 text with description</string>
+    <string name="onboarding_description_2">There is 2 text with description</string>
+    <string name="onboarding_description_3">There is 3 text with description</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="finish">Finish</string>
+
 
 
 </resources>
