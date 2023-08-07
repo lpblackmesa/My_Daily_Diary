@@ -15,8 +15,6 @@ class MainDiaryFragment:Fragment() {
 
     private lateinit var binding : FragmentDrawerBinding
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
