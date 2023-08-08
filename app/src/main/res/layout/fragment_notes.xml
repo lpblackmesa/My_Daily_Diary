@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.NotesFragment">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -11,4 +12,72 @@
         android:layout_height="match_parent"
         tools:itemCount="6"
         tools:listitem="@layout/item_recycler_note" />
-</FrameLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/purple_200"
+        android:text="@string/add"
+        app:icon="@drawable/twotone_add_circle_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/purple_200"
+        android:contentDescription="@string/add_note"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/fab_add"
+        app:layout_constraintEnd_toEndOf="@+id/fab_add"
+        app:srcCompat="@drawable/note_add" />
+
+    <TextView
+        android:id="@+id/fab_add_note_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/add_note"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/fab_add_note"
+        app:layout_constraintEnd_toStartOf="@+id/fab_add_note"
+        app:layout_constraintTop_toTopOf="@+id/fab_add_note" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_notification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/purple_200"
+        android:contentDescription="Menu Person"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/fab_add_note"
+        app:layout_constraintEnd_toEndOf="@+id/fab_add_note"
+        app:layout_constraintStart_toStartOf="@+id/fab_add_note"
+        app:srcCompat="@drawable/notification_add" />
+
+    <TextView
+        android:id="@+id/fab_add_notification_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/add_notification"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/fab_add_notification"
+        app:layout_constraintEnd_toStartOf="@+id/fab_add_notification"
+        app:layout_constraintTop_toTopOf="@+id/fab_add_notification" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.studyproject.mydailydiary.R
 import com.studyproject.mydailydiary.databinding.FragmentOnboardingMainBinding
@@ -53,7 +54,7 @@ class OnboardingMainFragment : Fragment() {
                     binding.nextText.apply {
                         setText(R.string.finish)
                         setOnClickListener {
-                            //переход на основной фрагмент
+                            findNavController().navigate(R.id.action_onboardingMainFragment_to_mainDiaryFragment)
                         }
                     }
                 }
