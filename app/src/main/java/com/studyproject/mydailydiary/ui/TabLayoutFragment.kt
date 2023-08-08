@@ -19,23 +19,6 @@ class TabLayoutFragment : Fragment() {
 
     private lateinit var binding: FragmentMainTabayoutDiaryBinding
 
-//    private val fragmentList = listOf(
-//        NotesFragment.newInstance(),
-//        CalendarFragment.newInstance(),
-//        AchievementFragment.newInstance()
-//    )
-
-    //список иконок и массив строк, которые приходится восстанавливать в TabConfigurationStrategy
-    private val tabIconList = listOf(
-       R.drawable.menu_book,
-        R.drawable.calendar_month_24,
-        R.drawable.achievement)
-    private val tabTextList  = listOf(
-        R.string.notes,
-        R.string.calendar,
-        R.string.achievements)
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,24 +31,24 @@ class TabLayoutFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //устанавливаем адаптер в ViewPager2
-        val adapter = ViewPagerAdapter(this)
-        binding.ViewPagerContainer.adapter = adapter
-        //связываем ViewPager и TabLayout
-        TabLayoutMediator(binding.tab, binding.ViewPagerContainer)
-        { tab, pos ->
-            //устанавливаем иконки и текст в TabLayout
-                    tab.setIcon(tabIconList[pos])
-                    tab.setText(tabTextList[pos])
-                        // установка иконки-бэйджа при необходимости
-            //Удалить бейджи можно методом tab.removeBadge()
-            if (pos == 2) {
-                val badge = tab.getOrCreateBadge()
-                badge.number = 1
-            }
-
-
-            }.attach()
+//        //устанавливаем адаптер в ViewPager2
+//        val adapter = ViewPagerAdapter(this)
+//        binding.ViewPagerContainer.adapter = adapter
+//        //связываем ViewPager и TabLayout
+//        TabLayoutMediator(binding.tab, binding.ViewPagerContainer)
+//        { tab, pos ->
+//            //устанавливаем иконки и текст в TabLayout
+//                    tab.setIcon(tabIconList[pos])
+//                    tab.setText(tabTextList[pos])
+//                        // установка иконки-бэйджа при необходимости
+//            //Удалить бейджи можно методом tab.removeBadge()
+//            if (pos == 2) {
+//                val badge = tab.getOrCreateBadge()
+//                badge.number = 1
+//            }
+//
+//
+//            }.attach()
 
 
     }

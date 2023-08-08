@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.studyproject.mydailydiary.databinding.FragmentMainTabayoutDiaryBinding
+import android.widget.Toast
 import com.studyproject.mydailydiary.databinding.FragmentNotesBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -14,9 +14,6 @@ class NotesFragment : Fragment() {
 
     private lateinit var binding: FragmentNotesBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,6 +23,45 @@ class NotesFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    //устанавливаем плавающую кнопку в начальное положение
+        binding.fabAdd.shrink()
+        // обрабатываем нажатия на плавающие кнопки
+        binding.fabAdd.setOnClickListener{
+            //убираем или показываем доп кнопки
+            initFAB()
+        }
+        binding.fabAddNote.setOnClickListener{
+            initFAB()
+            showToast("Hello From Add Note Button")
+        }
+        binding.fabAddNotification.setOnClickListener{
+            initFAB()
+            showToast("Hello From Add Noti Button")
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    // функция управления поведением кнопок при нажатии
+    private fun initFAB() {
+        if (binding.fabAdd.isExtended) {
+            binding.fabAdd.shrink()
+            binding.fabAddNote.hide()
+            binding.fabAddNoteText.visibility = View.GONE
+            binding.fabAddNotification.hide()
+            binding.fabAddNotificationText.visibility = View.GONE
+        } else {
+            binding.fabAdd.extend()
+            binding.fabAddNote.show()
+            binding.fabAddNoteText.visibility = View.VISIBLE
+            binding.fabAddNotification.show()
+            binding.fabAddNotificationText.visibility = View.VISIBLE
+        }
+    }
     companion object {
 
         @JvmStatic
