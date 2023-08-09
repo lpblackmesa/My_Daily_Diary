@@ -20,11 +20,12 @@ class SplashFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        if (SharedPreferenceRepository.isFirstOpen()) {
+       if (SharedPreferenceRepository.isFirstOpen()) {
         Handler(Looper.getMainLooper()).postDelayed({
             findNavController().navigate(
-                R.id.action_splashFragment_to_onboardingMainFragment) },3000)}
-        else { findNavController().navigate(R.id.action_splashFragment_to_mainDiaryFragment) }
+                R.id.action_splashFragment_to_onboardingMainFragment) },1500) }
+
+       else { findNavController().navigate(R.id.action_splashFragment_to_mainDiaryFragment) }
 
 
         // Inflate the layout for this fragment

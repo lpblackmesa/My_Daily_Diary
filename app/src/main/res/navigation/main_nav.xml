@@ -12,10 +12,14 @@
         tools:layout="@layout/fragment_splash" >
         <action
             android:id="@+id/action_splashFragment_to_mainDiaryFragment"
-            app:destination="@id/mainDiaryFragment" />
+            app:destination="@id/mainDiaryFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_splashFragment_to_onboardingMainFragment"
-            app:destination="@id/onboardingMainFragment" />
+            app:destination="@id/onboardingMainFragment"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/mainDiaryFragment"
@@ -29,6 +33,8 @@
         tools:layout="@layout/fragment_onboarding_main">
         <action
             android:id="@+id/action_onboardingMainFragment_to_mainDiaryFragment"
-            app:destination="@id/mainDiaryFragment" />
+            app:destination="@id/mainDiaryFragment"
+            app:popUpTo="@id/onboardingMainFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>
