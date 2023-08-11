@@ -2,7 +2,12 @@ package com.studyproject.mydailydiary.db
 
 import android.content.Context
 import androidx.room.Room
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
+@Module
+@InstallIn(SingletonComponent::class)
     object DiaryDB {
 
         var DiaryDAO: DiaryDAO? = null
@@ -10,6 +15,8 @@ import androidx.room.Room
         private var db: AppDataBase? = null
 
         //инициализация базы данных
+
+
         fun initDB(context : Context) {
             db = Room.databaseBuilder(context, AppDataBase::class.java, "data-base")
                 .build()
