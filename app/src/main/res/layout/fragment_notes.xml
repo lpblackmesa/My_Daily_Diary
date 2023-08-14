@@ -4,14 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/default_background"
     tools:context=".ui.NotesFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycleView"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:itemCount="6"
-        tools:listitem="@layout/item_recycler_note" />
+        tools:listitem="@layout/item_recycler_diaryitem" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_add"
@@ -38,7 +39,7 @@
         app:fabSize="normal"
         app:layout_constraintBottom_toTopOf="@+id/fab_add"
         app:layout_constraintEnd_toEndOf="@+id/fab_add"
-        app:srcCompat="@drawable/note_add" />
+        app:srcCompat="@drawable/edit_note" />
 
     <TextView
         android:id="@+id/fab_add_note_text"

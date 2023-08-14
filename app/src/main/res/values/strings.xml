@@ -40,5 +40,7 @@
     <string name="shopping">SHOPPING</string>
     <string name="cleaning">CLEANING</string>
     <string name="study">STUDY</string>
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
 
 </resources>

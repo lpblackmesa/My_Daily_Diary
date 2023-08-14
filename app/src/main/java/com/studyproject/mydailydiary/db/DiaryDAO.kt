@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.studyproject.mydailydiary.data.DiaryItem
 import com.studyproject.mydailydiary.data.entity.DiaryItemEntity
 
 @Dao
@@ -19,5 +20,8 @@ interface DiaryDAO {
 
     @Query("SELECT * FROM DiaryItem")
     suspend fun getDiary(): List<DiaryItemEntity>
+
+    @Query("SELECT * FROM DiaryItem WHERE Date = :date ")
+    suspend fun getDiaryItem(date: Long): DiaryItemEntity
 
 }

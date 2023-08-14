@@ -1,85 +1,71 @@
 package com.studyproject.mydailydiary.ui
 
 import android.app.Dialog
-import android.content.DialogInterface
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.os.BundleCompat
+import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.google.android.material.chip.Chip
 import com.studyproject.mydailydiary.R
+import com.studyproject.mydailydiary.data.DiaryItem
 import com.studyproject.mydailydiary.databinding.DialogfragmentEditBinding
 import com.studyproject.mydailydiary.models.EditDialogViewModel
-import com.studyproject.mydailydiary.utils.Doing
-import com.studyproject.mydailydiary.utils.Mood
+import com.studyproject.mydailydiary.data.Doing
+import com.studyproject.mydailydiary.data.Keys
+import com.studyproject.mydailydiary.data.Mood
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
 //наследуемся от DialogFragment
 class EditDiaryDialogFragment : DialogFragment() {
 
-    lateinit var binding: DialogfragmentEditBinding
-    private val date = Calendar.getInstance().timeInMillis
+    private var binding: DialogfragmentEditBinding? = null
+    private var date = Calendar.getInstance().timeInMillis
+
+    //список всех чипов
     private val chipList = ArrayList<Chip>()
 
-    private val diaryModel : EditDialogViewModel by viewModels(ownerProducer = { requireParentFragment() })
+    private val diaryModel: EditDialogViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         //inflate диалогового фрагмента
         binding = DialogfragmentEditBinding.inflate(LayoutInflater.from(context))
-        //список всех чипов
 
-        diaryModel.string.observe(this){
-            Log.e("!", "$it observe onCreateDialog")
-        }
-
-        diaryModel.diary_mesage.observe(this){
-            Log.e("!", "$it observe onCreateDialog")
-        }
-        Log.e("!",diaryModel.diaryItem.toString() + " onCreateDialog")
-
-        return activity?.let { it ->
+        return activity?.let { _ ->
             //подключаем кастомный Spinner адаптер к Spinner с двумя разными layout
             val adapter = SpinnerCustomAdapter(requireContext(), Mood.values())
             adapter.setDropDownViewResource(R.layout.item_spinner_dropped)
-            binding.spinner.let {
-                it.adapter = adapter
-                it.setSelection(0, false)
-                it.prompt = getString(R.string.mood_choose)
+            binding?.spinner.let {
+                it?.adapter = adapter
+                it?.setSelection(0, false)
+                it?.prompt = getString(R.string.mood_choose)
             }
+            //устанавливаем текущее время
+            binding?.dateText?.text = SimpleDateFormat("EEEE , dd MMMM yyyy   hh:mm").format(date)
 
-            binding.dateText.text = SimpleDateFormat("EEEE , dd MMMM yyyy   hh:mm").format(date)
 
-            binding.spinner.onItemSelectedListener = object :
+//спиннер листенер
+            binding?.spinner?.onItemSelectedListener = object :
                 AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                    binding.messageEdit.setText("")
-
-                    //получение всех отмеченных занятий
-                    chipList.forEachIndexed() { index, it ->
-                        if (it.isChecked) {
-                            binding.messageEdit.append(
-                                it.id.toString() + " ${
-                                    requireContext().getString(
-                                        Doing.values()[index].description
-                                    )
-                                }."
-                            )
-                            binding.messageEdit.append("\n")
-
-                        }
-                    }
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
-                    binding.messageEdit.setText(binding.spinner.selectedItemId.toString())
                 }
             }
+
             //создаем программно chip, сколько есть ENUM занятий
             enumValues<Doing>().forEachIndexed { index, it ->
                 var chip = Chip(requireContext())
@@ -87,17 +73,17 @@ class EditDiaryDialogFragment : DialogFragment() {
                 if (index < 9) {
                     chip = getLayoutInflater().inflate(
                         R.layout.chip_choise,
-                        binding.chipGroup,
+                        binding?.chipGroup,
                         false
                     ) as Chip
-                    binding.chipGroup.addView(chip)
+                    binding?.chipGroup?.addView(chip)
                 } else {
                     chip = getLayoutInflater().inflate(
                         R.layout.chip_choise,
-                        binding.chipGroup2,
+                        binding?.chipGroup2,
                         false
                     ) as Chip
-                    binding.chipGroup2.addView(chip)
+                    binding?.chipGroup2?.addView(chip)
                 }
                 chip.id = index
                 chip.setText(it.description)
@@ -108,80 +94,129 @@ class EditDiaryDialogFragment : DialogFragment() {
                 chipList.add(chip)
             }
 
+            //создание диалога
 
-            val builder = AlertDialog.Builder(it)
+            val dialog: AlertDialog = AlertDialog.Builder(requireContext())
+                .setView(binding?.root)
+                .setPositiveButton(R.string.add, null)
+                .setNegativeButton(R.string.back) { dialog, id -> dialog.cancel() }
+                .setNeutralButton(R.string.edit, null)
+                .show()
 
-            builder.setView(binding.root)
-                // Добавляем позитивную кнопку
-                .setPositiveButton(R.string.add,
-                    DialogInterface.OnClickListener { dialog, id ->
+            val positiveButton: Button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            val editButton: Button = dialog.getButton(AlertDialog.BUTTON_NEUTRAL)
 
-                    })
-                // Добавляем  кнопку назад
-                .setNegativeButton(R.string.back,
-                    DialogInterface.OnClickListener { dialog, id ->
-                        getDialog()?.cancel()
-                    })
-            builder.create()
+            //Получаем АГРУМЕНТЫ для получения типа диалога
+            val showMode = arguments?.getString(Keys.CREATE.KEY) ?: Keys.CREATE.VALUE
+            var diaryItem: DiaryItem? = null
+            //получаем обьект для отображения
+            // получаем данные и заполняем фрагмент
+
+            if (Build.VERSION.SDK_INT >= 33) { // TIRAMISU
+                diaryItem = arguments?.getParcelable("ITEM", DiaryItem::class.java)
+            } else {
+                diaryItem = BundleCompat.getParcelable(
+                    this.requireArguments(),
+                    "ITEM",
+                    DiaryItem::class.java
+                )
+            }
+
+            //переопределение нажатий на кнопки
+            positiveButton.setOnClickListener {
+                binding?.let {
+                    diaryModel.diary_mesage.value = DiaryItem(
+                        date,
+                        it.spinner.selectedItemPosition,
+                        getSelectedChip(),
+                        it.messageEdit.text.toString(),
+                        false
+                    )
+                }
+                dialog.cancel()
+            }
+
+            editButton.setOnClickListener {
+                editButton.isVisible = false
+                positiveButton.isVisible = true
+                positiveButton.setText(R.string.save)
+                if (diaryItem != null) {
+                    setDataToFragment(diaryItem, true)
+                }
+            }
+            editButton.isVisible = false
+            if (diaryItem != null) {
+                //заполнение фрагмента данными, если они есть
+                when (showMode) {
+                    Keys.SHOW.VALUE -> {
+                        date = diaryItem.date
+                        binding?.messageEdit?.hint = ""
+                        binding?.messageLayout?.hint = ""
+                        editButton.isVisible = true
+                        positiveButton.isVisible = false
+                        setDataToFragment(diaryItem, false)
+                    }
+
+                    Keys.EDIT.VALUE -> {
+                        date = diaryItem.date
+                        editButton.isVisible = false
+                        setDataToFragment(diaryItem, true)
+                    }
+
+                }
+            }
+
+
+            binding?.let {
+                it.messageEdit.addTextChangedListener { edit ->
+                    //если текст пустой - блокируем кнопку добавить
+                    positiveButton.isEnabled = edit?.isBlank() == false
+                }
+            }
+
+
+            dialog
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
 
+    private fun setDataToFragment(item: DiaryItem, enabled: Boolean) {
 
-
-        diaryModel.diary_mesage.observe(this){
-            Log.e("!", "$it observe onCreateView")
+        //заполнение фрагмента данными
+        binding?.let {
+            it.dateText.text = SimpleDateFormat("EEEE , dd MMMM yyyy   hh:mm").format(item.date)
+            it.spinner.setSelection(item.mood)
+            it.spinner.isEnabled = enabled
+            it.messageEdit.setText(item.text)
+            it.messageEdit.isEnabled = enabled
+            it.chipGroup2.isClickable = enabled
+            it.chipGroup.isClickable = enabled
         }
-        Log.e("!",diaryModel.diaryItem.toString() + " onCreateView")
 
-
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
-
-
-    override fun onStart() {
-        diaryModel.diary_mesage.observe(this){
-            Log.e("!", "$it observe onStart")
+        chipList.forEach {
+            it.isClickable = enabled
         }
-        Log.e("!",diaryModel.diaryItem.toString() + " onStart")
-        super.onStart()
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        //заполнение фрагмента данными, если они есть
-
-        Log.e("!",diaryModel.diaryItem.toString() + " onViewCreated")
-
-        val showMode = arguments?.getString("MODE") ?: "NULL"
-
-
-
-        diaryModel.diary_mesage.observe(this){
-            Log.e("!", "$it observe onCreateView")
-        }
-        Log.e("!",diaryModel.diaryItem.toString() + " onCreateView")
-
-
-
-        if (diaryModel.diaryItem != null) {
-            diaryModel.diaryItem?.doing?.let { setSelectedChip(it) }
-        }
-    }
-
-
-    private fun setSelectedChip(moods : ArrayList<Int>) {
-
-        moods.forEachIndexed { index, it ->
+        //выделяем выбранные занятия
+        item.doing.forEachIndexed { index, it ->
             chipList[index].isChecked = true
-            binding.messageEdit.append(it.toString())
         }
     }
 
+    private fun getSelectedChip(): ArrayList<Int> {
+        val list = arrayListOf<Int>()
+        chipList.forEachIndexed() { index, it ->
+            if (it.isChecked) {
+                list.add(index)
+            }
+        }
+        return list
+    }
 }
+
+
+////получение всех отмеченных занятий
+//
+//        binding?.messageEdit?.append("\n")
+//
+//    }
+//}
