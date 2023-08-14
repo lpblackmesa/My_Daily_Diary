@@ -10,7 +10,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AchievementFragment : Fragment() {
-    private lateinit var binding: FragmentAchievementBinding
+    private  var binding: FragmentAchievementBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +21,7 @@ class AchievementFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAchievementBinding.inflate(inflater, container, false)
-        return binding.root
+        return binding?.root
     }
     companion object {
 

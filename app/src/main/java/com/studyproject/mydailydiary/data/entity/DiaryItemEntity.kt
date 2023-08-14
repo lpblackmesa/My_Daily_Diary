@@ -13,7 +13,7 @@ data class DiaryItemEntity  (
     @ColumnInfo("Mood")
     val mood: Int,
     @ColumnInfo("Doing")
-    val doing: String,
+    val doing: ArrayList<Int>,
     @ColumnInfo("Text")
     val text: String,
     @ColumnInfo("Notification")

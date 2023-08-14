@@ -8,7 +8,7 @@ class DiaryRepository {
 
 
     suspend fun getDiary(): ArrayList<DiaryItem> {
-        return (DiaryDB.DiaryDAO?.getDiary()?.map {
+        return (DiaryDB.diaryDAO?.getDiary()?.map {
             DiaryItem(
                 it.date,
                 it.mood,
@@ -19,8 +19,21 @@ class DiaryRepository {
         } as? ArrayList<DiaryItem>) ?: arrayListOf()
     }
 
+    suspend fun getDiaryItem(diaryItem: DiaryItem): DiaryItem {
+        return DiaryDB.diaryDAO?.getDiaryItem(diaryItem.date)?.let {
+            DiaryItem(
+                it.date,
+                it.mood,
+                it.doing,
+                it.text,
+                it.notification
+            )
+        } ?: DiaryItem(0,0,arrayListOf(),"",false)
+    }
+
+
     suspend fun addDiary(diaryItem: DiaryItem): Boolean {
-        DiaryDB.DiaryDAO?.insertDiaryItem(
+        DiaryDB.diaryDAO?.insertDiaryItem(
             DiaryItemEntity(
                 diaryItem.date,
                 diaryItem.mood,
@@ -33,7 +46,7 @@ class DiaryRepository {
     }
 
     suspend fun delDiary(diaryItem: DiaryItem) {
-        DiaryDB.DiaryDAO?.delDiaryItem(
+        DiaryDB.diaryDAO?.delDiaryItem(
             DiaryItemEntity(
                 diaryItem.date,
                 diaryItem.mood,

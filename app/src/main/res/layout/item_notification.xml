@@ -21,7 +21,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/calendar_month_24" />
+            app:srcCompat="@drawable/notifications" />
 
         <TextView
             android:id="@+id/text"

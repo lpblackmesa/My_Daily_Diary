@@ -14,7 +14,7 @@ import com.studyproject.mydailydiary.databinding.FragmentOnboardingMainBinding
 
 class OnboardingMainFragment : Fragment() {
 
-    private lateinit var binding: FragmentOnboardingMainBinding
+    private var binding: FragmentOnboardingMainBinding? = null
 
     //переменная callback - переопределяем метод в ViewPager2 для замены кнопок
     private var viewPager2Callback = object : ViewPager2.OnPageChangeCallback() {
@@ -26,36 +26,43 @@ class OnboardingMainFragment : Fragment() {
             super.onPageScrolled(position, positionOffset, positionOffsetPixels)
             when (position) {
                 0 -> {
-                    binding.backText.isVisible = false
-                    //устанавливаем кнопке переход на след страницу и текст
-                    binding.nextText.apply {
-                        setText(R.string.next)
-                        setOnClickListener {
-                            binding.pager.currentItem += 1
+                    binding?.let {
+                        it.backText.isVisible = false
+                        //устанавливаем кнопке переход на след страницу и текст
+                        it.nextText.apply {
+                            setText(R.string.next)
+                            setOnClickListener { view ->
+                                it.pager.currentItem += 1
+                            }
                         }
                     }
                 }
+
                 1 -> {
-                    binding.backText.isVisible = true
-                    binding.backText.apply {
-                        setText(R.string.back)
-                        setOnClickListener {
-                            binding.pager.currentItem -= 1
+                    binding?.let {
+                        it.backText.isVisible = true
+                        it.backText.apply {
+                            setText(R.string.back)
+                            setOnClickListener { view ->
+                                it.pager.currentItem -= 1
+                            }
                         }
-                    }
-                    binding.nextText.apply {
-                        setText(R.string.next)
-                        setOnClickListener {
-                            binding.pager.currentItem += 1
+                        it.nextText.apply {
+                            setText(R.string.next)
+                            setOnClickListener { view ->
+                                it.pager.currentItem += 1
+                            }
                         }
                     }
                 }
 
                 2 -> {
-                    binding.nextText.apply {
-                        setText(R.string.finish)
-                        setOnClickListener {
-                            findNavController().navigate(R.id.action_onboardingMainFragment_to_mainDiaryFragment)
+                    binding?.let {
+                        it.nextText.apply {
+                            setText(R.string.finish)
+                            setOnClickListener {
+                                findNavController().navigate(R.id.action_onboardingMainFragment_to_mainDiaryFragment)
+                            }
                         }
                     }
                 }
@@ -70,25 +77,26 @@ class OnboardingMainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentOnboardingMainBinding.inflate(inflater, container, false)
-        return binding.root
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         //подключаем прокрутке адаптер и передаем ему фрагмент
-        binding.pager.adapter = OnboardingAdapter(this)
-
         //переопределяем метод в ViewPager2 для замены кнопок
-        binding.pager.registerOnPageChangeCallback(viewPager2Callback)
-
         //передаем circleIndicator - ViewPager2
-        binding.circleIndicator.attachTo(binding.pager)
+
+        binding?.let {
+            it.pager.adapter = OnboardingAdapter(this)
+            it.pager.registerOnPageChangeCallback(viewPager2Callback)
+            it.circleIndicator.attachTo(it.pager)
+        }
     }
 
     override fun onDestroy() {
         //отписываем Callback при удалении фрагмента, чтобы избежать утечки памяти
-        binding.pager.unregisterOnPageChangeCallback(viewPager2Callback)
+        binding?.pager?.unregisterOnPageChangeCallback(viewPager2Callback)
         super.onDestroy()
     }
 }
