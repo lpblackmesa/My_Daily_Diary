@@ -1,4 +1,4 @@
-package com.studyproject.mydailydiary.ui
+package com.studyproject.mydailydiary.ui.spinnerAdapter
 
 import android.content.Context
 import android.view.LayoutInflater

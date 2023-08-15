@@ -2,6 +2,7 @@
 <resources>
     <color name="default_background">@color/black</color>
     <color name="default_holder_background">#393B3C</color>
+    <color name="checked_holder_background">#505455</color>
 
     <color name="purple_200">#FFBB86FC</color>
     <color name="green">#36BC3C</color>

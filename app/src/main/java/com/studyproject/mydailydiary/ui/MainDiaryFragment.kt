@@ -4,15 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import com.studyproject.mydailydiary.R
-import com.studyproject.mydailydiary.databinding.ActionBarBinding
 import com.studyproject.mydailydiary.databinding.FragmentDrawerBinding
-import com.studyproject.mydailydiary.databinding.FragmentMainTabayoutDiaryBinding
 import com.studyproject.mydailydiary.repository.SharedPreferenceRepository
+import com.studyproject.mydailydiary.ui.viewPagerAdapter.ViewPagerAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
