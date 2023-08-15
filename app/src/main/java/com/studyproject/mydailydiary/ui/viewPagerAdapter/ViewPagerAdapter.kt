@@ -1,8 +1,10 @@
-package com.studyproject.mydailydiary.ui
+package com.studyproject.mydailydiary.ui.viewPagerAdapter
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.studyproject.mydailydiary.ui.AchievementFragment
+import com.studyproject.mydailydiary.ui.CalendarFragment
+import com.studyproject.mydailydiary.ui.NotesFragment
 
 class ViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 

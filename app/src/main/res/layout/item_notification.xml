@@ -8,6 +8,7 @@
     app:cardCornerRadius="15dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/frame">
@@ -22,6 +23,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/notifications" />
+
+        <ImageView
+            android:id="@+id/selectIcon"
+            android:visibility="gone"
+            android:layout_marginEnd="10dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="23dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/checkmark" />
 
         <TextView
             android:id="@+id/text"

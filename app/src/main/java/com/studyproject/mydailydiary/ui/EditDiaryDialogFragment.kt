@@ -3,15 +3,11 @@ package com.studyproject.mydailydiary.ui
 import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.os.BundleCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -25,6 +21,7 @@ import com.studyproject.mydailydiary.models.EditDialogViewModel
 import com.studyproject.mydailydiary.data.Doing
 import com.studyproject.mydailydiary.data.Keys
 import com.studyproject.mydailydiary.data.Mood
+import com.studyproject.mydailydiary.ui.spinnerAdapter.SpinnerCustomAdapter
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -53,7 +50,7 @@ class EditDiaryDialogFragment : DialogFragment() {
                 it?.prompt = getString(R.string.mood_choose)
             }
             //устанавливаем текущее время
-            binding?.dateText?.text = SimpleDateFormat("EEEE , dd MMMM yyyy   hh:mm").format(date)
+            binding?.dateText?.text = SimpleDateFormat("EEEE , dd MMMM yyyy  HH:mm").format(date)
 
 
 //спиннер листенер
@@ -184,7 +181,7 @@ class EditDiaryDialogFragment : DialogFragment() {
 
         //заполнение фрагмента данными
         binding?.let {
-            it.dateText.text = SimpleDateFormat("EEEE , dd MMMM yyyy   hh:mm").format(item.date)
+            it.dateText.text = SimpleDateFormat("EEEE , dd MMMM yyyy  HH:mm").format(item.date)
             it.spinner.setSelection(item.mood)
             it.spinner.isEnabled = enabled
             it.messageEdit.setText(item.text)
