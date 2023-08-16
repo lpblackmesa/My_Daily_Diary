@@ -25,7 +25,11 @@
         android:id="@+id/mainDiaryFragment"
         android:name="com.studyproject.mydailydiary.ui.MainDiaryFragment"
         android:label="MainDiaryFragment"
-        tools:layout="@layout/fragment_drawer"/>
+        tools:layout="@layout/fragment_drawer">
+        <action
+            android:id="@+id/action_mainDiaryFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/onboardingMainFragment"
         android:name="com.studyproject.mydailydiary.ui.onboarding.OnboardingMainFragment"
@@ -37,4 +41,9 @@
             app:popUpTo="@id/onboardingMainFragment"
             app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.studyproject.mydailydiary.ui.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
 </navigation>

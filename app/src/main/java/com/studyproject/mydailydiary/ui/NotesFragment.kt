@@ -1,11 +1,18 @@
 package com.studyproject.mydailydiary.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 import androidx.core.os.bundleOf
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.selection.SelectionPredicates
@@ -13,6 +20,7 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StableIdKeyProvider
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.studyproject.mydailydiary.R
 import com.studyproject.mydailydiary.data.DiaryItem
 import com.studyproject.mydailydiary.data.HolderType
 import com.studyproject.mydailydiary.data.Keys
@@ -28,12 +36,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 
 @AndroidEntryPoint
-class NotesFragment : Fragment(), HolderItemClickListener {
+class NotesFragment : Fragment(), HolderItemClickListener, ActionMode.Callback {
 
     private var binding: FragmentNotesBinding? = null
     private var tracker: SelectionTracker<Long>? = null
-
     private val diaryModel: EditDialogViewModel by activityViewModels()
+    private var actionMode: ActionMode? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,11 +57,8 @@ class NotesFragment : Fragment(), HolderItemClickListener {
         //запрашиваем значения списка из репозитория через viewmodel и обновляем
         diaryModel.getAllDiary()
 
-
-
-
-
-
+        val appCompatActivity = activity as AppCompatActivity
+        actionMode = appCompatActivity.startSupportActionMode(this)
 
         diaryModel.addDiaryItem(DiaryItem(323454234543, 5, arrayListOf(), "noty", true))
         diaryModel.addDiaryItem(DiaryItem(323454234546, 7, arrayListOf(2, 6, 8), "text", false))
@@ -95,7 +101,10 @@ class NotesFragment : Fragment(), HolderItemClickListener {
 //            editDiaryDialog.show(transaction, Keys.CREATE_NOTIFY.VALUE)
 
         }
+
+
     }
+
 
     private fun getSortedRecyclerItems(baseItem: ArrayList<DiaryItem>): ArrayList<RecycleViewEntity> {
         //создаем список с сортированным ссписком DiaryItem
@@ -115,19 +124,19 @@ class NotesFragment : Fragment(), HolderItemClickListener {
         }
         //создаем список RecycleViewEntity
         val newList = ArrayList<RecycleViewEntity>()
-        var id : Long = 0
+        var id: Long = 0
         map.forEach() { entry ->
 //добавляем в список заголовок с датой
             newList.add(
-                RecycleViewEntity(++id,HolderType.HEADER, null, entry.value[0].date)
+                RecycleViewEntity(++id, HolderType.HEADER, null, entry.value[0].date)
             )
             //LessonEntity(type = TrainingType.HEADER, null, entry.key.))
             // преобразовывем ключ мапы в список RecycleViewEntity
             entry.value.mapTo(newList) {
                 if (it.notification) {
-                    RecycleViewEntity(++id,HolderType.NOTIFY, it, null)
+                    RecycleViewEntity(++id, HolderType.NOTIFY, it, null)
                 } else {
-                    RecycleViewEntity(++id,HolderType.DIARY, it, null)
+                    RecycleViewEntity(++id, HolderType.DIARY, it, null)
                 }
             }
         }
@@ -162,20 +171,30 @@ class NotesFragment : Fragment(), HolderItemClickListener {
                 //передаем в адаптер tracker
                 mainAdapter.setMyTracker(tracker)
                 layoutManager = LinearLayoutManager(requireContext())
-            }
-            (adapter as? ItemDiaryAdapter)?.submitList(list)
-            //перерисовка recyclerView
-            adapter?.notifyDataSetChanged()
 
+                //обсервер состояния списка выбранных элементов
+
+                (adapter as? ItemDiaryAdapter)?.submitList(list)
+                //перерисовка recyclerView
+                adapter?.notifyDataSetChanged()
+
+            }
         }
     }
 
 
-    private fun showDialogFragment(type: Keys, item : DiaryItem? ){
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        tracker?.onSaveInstanceState(outState)
+    }
+
+    private fun showDialogFragment(type: Keys, item: DiaryItem?) {
 
         val editDiaryDialog = EditDiaryDialogFragment()
-        editDiaryDialog.arguments = bundleOf(type.KEY to type.VALUE,
-            Keys.ITEM.KEY to item)
+        editDiaryDialog.arguments = bundleOf(
+            type.KEY to type.VALUE,
+            Keys.ITEM.KEY to item
+        )
         val transaction: FragmentTransaction = parentFragmentManager.beginTransaction()
         editDiaryDialog.show(transaction, type.VALUE)
 
@@ -208,10 +227,10 @@ class NotesFragment : Fragment(), HolderItemClickListener {
     //обрабатываем клики на recyclerView item
     override fun onHolderItemClick(item: RecycleViewEntity) {
         when (item.type) {
-            HolderType.DIARY -> showDialogFragment(Keys.SHOW,item.data)
-           // HolderType.NOTIFY ->
+            HolderType.DIARY -> showDialogFragment(Keys.SHOW, item.data)
+            // HolderType.NOTIFY ->
             else -> { //throw IllegalArgumentException("Invalid view type in RecycleViewEntity")
-             }
+            }
         }
     }
 
@@ -222,6 +241,22 @@ class NotesFragment : Fragment(), HolderItemClickListener {
             NotesFragment()
     }
 
+    override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+        mode?.menuInflater?.inflate(R.menu.toolbar_select_menu, menu)
+        Log.e("!","onCreateActionMode")
+        return true
+    }
+
+    override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean = true
+
+    override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+        //TODO("Not yet implemented")
+        return true
+    }
+
+    override fun onDestroyActionMode(mode: ActionMode?) {
+        // TODO("Not yet implemented")
+    }
 
 
 }

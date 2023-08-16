@@ -1,6 +1,7 @@
 package com.studyproject.mydailydiary.ui
 
 import android.os.Bundle
+import android.view.Menu
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
@@ -20,6 +21,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+    }
 
+    override  fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.toolbar_menu_main, menu)
+        return true
     }
 }
