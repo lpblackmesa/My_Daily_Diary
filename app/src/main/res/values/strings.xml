@@ -52,5 +52,8 @@
     <string name="delete_question">"Do you really want to delete these"</string>
     <string name="elements">elements</string>
     <string name="selected">Selected :</string>
+    <string name="user">User</string>
+    <string name="login_successfull">Successfully signed in user</string>
+    <string name="login_unsuccessfull">Sign in unsuccessful</string>
 
 </resources>

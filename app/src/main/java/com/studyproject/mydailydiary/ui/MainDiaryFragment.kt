@@ -1,21 +1,35 @@
 package com.studyproject.mydailydiary.ui
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.auth.FirebaseAuth
+import com.squareup.picasso.Picasso
 import com.studyproject.mydailydiary.R
+import com.studyproject.mydailydiary.data.AuthenticationStateEnum
 import com.studyproject.mydailydiary.databinding.FragmentDrawerBinding
+import com.studyproject.mydailydiary.databinding.HeaderDrawerBinding
+import com.studyproject.mydailydiary.models.LoginViewModel
 import com.studyproject.mydailydiary.repository.SharedPreferenceRepository
 import com.studyproject.mydailydiary.ui.viewPagerAdapter.ViewPagerAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +39,77 @@ class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedLis
 
 
     private var binding: FragmentDrawerBinding? = null
+    private val loginViewModel by viewModels<LoginViewModel>()
+    private var headerBinding: HeaderDrawerBinding? = null
+
+    //   обсервер состояния аутентификации
+    private fun observeAuthenticationState() {
+        loginViewModel.authenticationState.observe(
+            viewLifecycleOwner,
+            Observer { authenticationState ->
+                when (authenticationState) {
+                    AuthenticationStateEnum.AUTHENTICATED -> {
+
+                        headerBinding?.userText?.text =
+                            FirebaseAuth.getInstance().currentUser?.displayName
+                        Picasso.get().load(FirebaseAuth.getInstance().currentUser?.photoUrl)
+                            .resize(200, 200)
+                            .centerCrop()
+                            .into(headerBinding?.imageView);
+
+                    }
+
+                    else -> {
+                        headerBinding?.userText?.text = getString(R.string.user)
+                        headerBinding?.imageView?.setImageResource(R.drawable.menu_book)
+
+                    }
+                }
+            }
+        )
+    }
+
+
+    //activity запрос аутентификации
+    private fun launchSignInFlow() {
+        val providers = arrayListOf(
+            AuthUI.IdpConfig.EmailBuilder().build(),
+            AuthUI.IdpConfig.GoogleBuilder().build()
+        )
+        val intent = AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(
+            providers
+        ).build()
+        //создаем активити
+        resultLauncher.launch(intent)
+    }
+
+    //получение ответа от запроса аутентификации
+    private var resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            //получаем логи аутентификации
+            val response = IdpResponse.fromResultIntent(result.data)
+            Log.e("!",result.resultCode.toString())
+            if (result.resultCode == Activity.RESULT_OK) {
+                // Successfully signed in user.
+
+
+                Snackbar.make(
+                    requireView(),
+                    getString(R.string.login_successfull) +
+                            "${FirebaseAuth.getInstance().currentUser?.displayName}!",
+                    Snackbar.LENGTH_LONG
+                ).show()
+
+            } else {
+                Snackbar.make(
+                    requireView(), getString(R.string.login_unsuccessfull) +
+                            " - ${response?.error?.errorCode}", Snackbar.LENGTH_LONG
+                ).show()
+            }
+        }
+
+
+    //отслеживание прихода результата из активити аутентификации
 
     private fun setupToolbar() {
         //привязываем AppBar к активити и устанавливаем заголовок
@@ -43,7 +128,8 @@ class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedLis
         }
         //привязываем drawer к ActionBar , Drawer и  NavigationView
         binding?.navView?.setNavigationItemSelectedListener(this)
-        val toggle = ActionBarDrawerToggle(requireActivity(), binding?.drawer, R.string.open, R.string.close)
+        val toggle =
+            ActionBarDrawerToggle(requireActivity(), binding?.drawer, R.string.open, R.string.close)
         binding?.drawer?.addDrawerListener(toggle)
         toggle.syncState()
     }
@@ -52,10 +138,11 @@ class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedLis
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settingsFragment -> findNavController().navigate(R.id.action_mainDiaryFragment_to_settingsFragment)
-            R.id.item1 -> {
-                binding?.actionBarFragment?.actionBar?.inflateMenu(R.menu.toolbar_menu_main)
-                invalidateOptionsMenu(requireActivity())
+            R.id.login -> {
+                launchSignInFlow()
             }
+
+            R.id.exit -> AuthUI.getInstance().signOut(requireContext())
 
         }
         binding?.drawer?.closeDrawer(GravityCompat.START)
@@ -93,8 +180,18 @@ class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedLis
         val viewPager = binding?.actionBarFragment?.ViewPagerContainer
         val tab = binding?.actionBarFragment?.tab
 
+        //binding header Drawer
+        binding?.let {
+            headerBinding = HeaderDrawerBinding.bind(it.navView.getHeaderView(0))
+        }
 
         setupToolbar()
+        observeAuthenticationState()
+
+
+
+
+        binding?.navView?.getHeaderView(0)
 
         //меняем поведение кнопки назад
         requireActivity().onBackPressedDispatcher.addCallback(
