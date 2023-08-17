@@ -1,25 +1,25 @@
 package com.studyproject.mydailydiary.ui
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
+import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
-import androidx.core.view.GravityCompat
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
-import androidx.recyclerview.selection.StableIdKeyProvider
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.studyproject.mydailydiary.R
 import com.studyproject.mydailydiary.data.DiaryItem
 import com.studyproject.mydailydiary.data.HolderType
@@ -36,12 +36,81 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 
 @AndroidEntryPoint
-class NotesFragment : Fragment(), HolderItemClickListener, ActionMode.Callback {
+class NotesFragment : Fragment(), HolderItemClickListener {
 
     private var binding: FragmentNotesBinding? = null
     private var tracker: SelectionTracker<Long>? = null
     private val diaryModel: EditDialogViewModel by activityViewModels()
-    private var actionMode: ActionMode? = null
+
+    fun showDeleteDialog(itemsCount: MutableList<RecycleViewEntity>) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.delete_note_dialog))
+            .setMessage(getString(R.string.delete_question) + " ${itemsCount.size} " + getString(R.string.elements))
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
+                //удаляем каждый элемент из списка
+                itemsCount.forEach {
+                    if (it.data != null) {
+                        diaryModel.delDiary(it.data)
+                    }
+                }
+            }
+
+            .setNegativeButton(getString(R.string.back)) { _, _ ->
+            }
+            .show()
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        tracker?.let {
+            when (it.selection.size()) {
+                0 -> inflater.inflate(R.menu.toolbar_menu_main, menu)
+                1 -> inflater.inflate(R.menu.toolbar_select_one_menu, menu)
+                else -> inflater.inflate(R.menu.toolbar_select_several_menu, menu)
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.action_delete -> {
+            tracker?.let {
+
+                val mainAdapter = binding?.recyclerView?.adapter as ItemDiaryAdapter
+                //делаем список выделенных элементов recycleEntity
+                val selected = mainAdapter.currentList.filter { item ->
+                    it.selection.contains(item.id)
+                }.toMutableList()
+                // вызываем диалог с удалением и передаем ему список
+                showDeleteDialog(selected)
+
+                it.clearSelection()
+            }
+            ActivityCompat.invalidateOptionsMenu(requireActivity())
+            true
+        }
+
+        R.id.action_edit -> {
+            tracker?.let {
+
+                val mainAdapter = binding?.recyclerView?.adapter as ItemDiaryAdapter
+                val selected = mainAdapter.currentList.firstOrNull { item ->
+                    item.id == it.selection.first()
+                }
+                if (selected != null) {
+                    showDialogFragment(Keys.EDIT, selected.data)
+                }
+                it.clearSelection()
+            }
+            ActivityCompat.invalidateOptionsMenu(requireActivity())
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
+    }
 
 
     override fun onCreateView(
@@ -57,12 +126,8 @@ class NotesFragment : Fragment(), HolderItemClickListener, ActionMode.Callback {
         //запрашиваем значения списка из репозитория через viewmodel и обновляем
         diaryModel.getAllDiary()
 
-        val appCompatActivity = activity as AppCompatActivity
-        actionMode = appCompatActivity.startSupportActionMode(this)
+        setHasOptionsMenu(true)
 
-        diaryModel.addDiaryItem(DiaryItem(323454234543, 5, arrayListOf(), "noty", true))
-        diaryModel.addDiaryItem(DiaryItem(323454234546, 7, arrayListOf(2, 6, 8), "text", false))
-        diaryModel.addDiaryItem(DiaryItem(323454234547, 10, arrayListOf(1, 11, 0), "text2", false))
 
         //подписываемся на обновления message , если есть изменения, добавляем
         diaryModel.diary_mesage.observe(viewLifecycleOwner) {
@@ -154,9 +219,10 @@ class NotesFragment : Fragment(), HolderItemClickListener, ActionMode.Callback {
                 setHasFixedSize(true)
 
                 val mainAdapter = ItemDiaryAdapter(this@NotesFragment)
-//создаем tracker для работы с выделением item в recyclerView
+                //создаем tracker для работы с выделением item в recyclerView
                 binding?.let {
                     adapter = mainAdapter
+                    layoutManager = LinearLayoutManager(requireContext())
                     tracker = SelectionTracker.Builder(
                         "selectionItem",
                         it.recyclerView,
@@ -166,19 +232,34 @@ class NotesFragment : Fragment(), HolderItemClickListener, ActionMode.Callback {
                     ).withSelectionPredicate(
                         //правило выделений
                         CustomSelectionPredicate(mainAdapter)
-                    ).build()
+                    ).build().apply {
+                        addObserver(
+                            object : SelectionTracker.SelectionObserver<Long>() {
+                                override fun onSelectionChanged() {
+                                    //при каждом изменении количества выбранных элементов
+                                    // вызываем пересоздание меню AppBar и записываем в заголовок количество элементов
+                                    val appCompatActivity = activity as AppCompatActivity
+                                    ActivityCompat.invalidateOptionsMenu(appCompatActivity)
+                                    val count = tracker?.selection?.size()
+                                    count?.let {
+                                        if (count > 0) {
+                                            appCompatActivity.title =
+                                                getString(R.string.selected) + " ${tracker?.selection?.size()}"
+                                        } else {
+                                            appCompatActivity.setTitle(R.string.app_name)
+                                        }
+                                    }
+                                }
+                            })
+                    }
+                    //передаем в адаптер tracker
+                    mainAdapter.setMyTracker(tracker)
+
                 }
-                //передаем в адаптер tracker
-                mainAdapter.setMyTracker(tracker)
-                layoutManager = LinearLayoutManager(requireContext())
-
-                //обсервер состояния списка выбранных элементов
-
-                (adapter as? ItemDiaryAdapter)?.submitList(list)
-                //перерисовка recyclerView
-                adapter?.notifyDataSetChanged()
-
             }
+            (adapter as? ItemDiaryAdapter)?.submitList(list)
+            //перерисовка recyclerView
+            adapter?.notifyDataSetChanged()
         }
     }
 
@@ -240,23 +321,5 @@ class NotesFragment : Fragment(), HolderItemClickListener, ActionMode.Callback {
         fun newInstance() =
             NotesFragment()
     }
-
-    override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-        mode?.menuInflater?.inflate(R.menu.toolbar_select_menu, menu)
-        Log.e("!","onCreateActionMode")
-        return true
-    }
-
-    override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean = true
-
-    override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
-        //TODO("Not yet implemented")
-        return true
-    }
-
-    override fun onDestroyActionMode(mode: ActionMode?) {
-        // TODO("Not yet implemented")
-    }
-
 
 }

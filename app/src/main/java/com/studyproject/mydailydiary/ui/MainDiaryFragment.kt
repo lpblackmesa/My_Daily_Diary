@@ -1,24 +1,17 @@
 package com.studyproject.mydailydiary.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.OnBackPressedDispatcher
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ActionMode
+import androidx.core.app.ActivityCompat.invalidateOptionsMenu
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayoutMediator
 import com.studyproject.mydailydiary.R
@@ -28,27 +21,19 @@ import com.studyproject.mydailydiary.ui.viewPagerAdapter.ViewPagerAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener, ActionMode.Callback {
+class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener {
 
 
     private var binding: FragmentDrawerBinding? = null
-    private var appBarConfiguration: AppBarConfiguration? = null
-    private var actionMode: ActionMode? = null
-
 
     private fun setupToolbar() {
+        //привязываем AppBar к активити и устанавливаем заголовок
         val appCompatActivity = activity as AppCompatActivity
         appCompatActivity.setSupportActionBar(binding?.actionBarFragment?.actionBar)
         appCompatActivity.setTitle(R.string.app_name)
         setHasOptionsMenu(true)
-       // binding?.actionBarFragment?.actionBar?.inflateMenu(R.menu.toolbar_menu_main)
-
+        //устанавливаем кнопку навигации drawer и определяем его поведение на нажатие
         appCompatActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-       // actionMode = appCompatActivity.startSupportActionMode(this)
-
-
-
         binding?.actionBarFragment?.actionBar?.setNavigationOnClickListener {
             if (binding?.drawer?.isDrawerOpen(GravityCompat.START) == true) {
                 binding?.drawer?.closeDrawer(GravityCompat.START)
@@ -56,23 +41,21 @@ class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedLis
                 binding?.drawer?.openDrawer(GravityCompat.START)
             }
         }
-
+        //привязываем drawer к ActionBar , Drawer и  NavigationView
         binding?.navView?.setNavigationItemSelectedListener(this)
-
-        val toggle =
-            ActionBarDrawerToggle(requireActivity(), binding?.drawer, R.string.open, R.string.close)
-
+        val toggle = ActionBarDrawerToggle(requireActivity(), binding?.drawer, R.string.open, R.string.close)
         binding?.drawer?.addDrawerListener(toggle)
-
         toggle.syncState()
-
-
     }
+
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settingsFragment -> findNavController().navigate(R.id.action_mainDiaryFragment_to_settingsFragment)
-            R.id.item1 -> Toast.makeText(requireContext(), "Logout!", Toast.LENGTH_SHORT).show()
+            R.id.item1 -> {
+                binding?.actionBarFragment?.actionBar?.inflateMenu(R.menu.toolbar_menu_main)
+                invalidateOptionsMenu(requireActivity())
+            }
 
         }
         binding?.drawer?.closeDrawer(GravityCompat.START)
@@ -145,23 +128,6 @@ class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedLis
                 }
             }.attach()
         }
-    }
-
-    override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-        mode?.menuInflater?.inflate(R.menu.toolbar_select_menu, menu)
-        Log.e("!","onCreateActionMode")
-        return true
-    }
-
-    override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean = true
-
-    override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
-        //TODO("Not yet implemented")
-        return true
-    }
-
-    override fun onDestroyActionMode(mode: ActionMode?) {
-       // TODO("Not yet implemented")
     }
 
 }
