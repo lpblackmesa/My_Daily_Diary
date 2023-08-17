@@ -7,7 +7,7 @@
             android:id="@+id/item1"
             android:title="Item" />
         <item
-            android:id="@+id/item2"
-            android:title="Item" />
+            android:id="@+id/settingsFragment"
+            android:title="@string/settings" />
     </group>
 </menu>
