@@ -22,14 +22,16 @@ import com.studyproject.mydailydiary.data.Doing
 import com.studyproject.mydailydiary.data.Keys
 import com.studyproject.mydailydiary.data.Mood
 import com.studyproject.mydailydiary.ui.spinnerAdapter.SpinnerCustomAdapter
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
 //наследуемся от DialogFragment
+@AndroidEntryPoint
 class EditDiaryDialogFragment : DialogFragment() {
 
     private var binding: DialogfragmentEditBinding? = null
-    private var date = Calendar.getInstance().timeInMillis
+    private var date : Long? = Calendar.getInstance().timeInMillis
 
     //список всех чипов
     private val chipList = ArrayList<Chip>()
@@ -68,14 +70,14 @@ class EditDiaryDialogFragment : DialogFragment() {
                 var chip = Chip(requireContext())
                 //первые 8 chip помещаем в первый chipGroup, остальные во второй
                 if (index < 9) {
-                    chip = getLayoutInflater().inflate(
+                    chip = layoutInflater.inflate(
                         R.layout.chip_choise,
                         binding?.chipGroup,
                         false
                     ) as Chip
                     binding?.chipGroup?.addView(chip)
                 } else {
-                    chip = getLayoutInflater().inflate(
+                    chip = layoutInflater.inflate(
                         R.layout.chip_choise,
                         binding?.chipGroup2,
                         false
@@ -122,13 +124,19 @@ class EditDiaryDialogFragment : DialogFragment() {
             //переопределение нажатий на кнопки
             positiveButton.setOnClickListener {
                 binding?.let {
-                    diaryModel.diary_mesage.value = DiaryItem(
+                    //записываем в базу данных
+                    val newItem = DiaryItem(
                         date,
                         it.spinner.selectedItemPosition,
                         getSelectedChip(),
                         it.messageEdit.text.toString(),
                         false
                     )
+                    diaryModel.diary_mesage.value = newItem
+                    //если включена мгновенная работа с FireBase
+                    if (diaryModel.getUseFirebase()) {
+                        diaryModel.setDiaryToFireBase(newItem)
+                    }
                 }
                 dialog.cancel()
             }
@@ -182,7 +190,7 @@ class EditDiaryDialogFragment : DialogFragment() {
         //заполнение фрагмента данными
         binding?.let {
             it.dateText.text = SimpleDateFormat("EEEE , dd MMMM yyyy  HH:mm").format(item.date)
-            it.spinner.setSelection(item.mood)
+            it.spinner.setSelection(item.mood?:0)
             it.spinner.isEnabled = enabled
             it.messageEdit.setText(item.text)
             it.messageEdit.isEnabled = enabled
@@ -194,7 +202,7 @@ class EditDiaryDialogFragment : DialogFragment() {
             it.isClickable = enabled
         }
         //выделяем выбранные занятия
-        item.doing.forEachIndexed { index, it ->
+        item.doing?.forEachIndexed { index, it ->
             chipList[index].isChecked = true
         }
     }
@@ -209,11 +217,3 @@ class EditDiaryDialogFragment : DialogFragment() {
         return list
     }
 }
-
-
-////получение всех отмеченных занятий
-//
-//        binding?.messageEdit?.append("\n")
-//
-//    }
-//}

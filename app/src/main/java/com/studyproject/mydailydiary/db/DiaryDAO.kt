@@ -13,15 +13,15 @@ interface DiaryDAO {
     //интерфейс запросов в базу данных
     //функции suspend для работы их в потоке
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertDiaryItem(DiaryItem: DiaryItemEntity)
+    suspend fun insertDiaryItem(diaryItem: DiaryItemEntity)
 
     @Delete
-    suspend fun delDiaryItem(DiaryItem: DiaryItemEntity)
+    suspend fun delDiaryItem(diaryItem: DiaryItemEntity)
 
     @Query("SELECT * FROM DiaryItem")
     suspend fun getDiary(): List<DiaryItemEntity>
 
     @Query("SELECT * FROM DiaryItem WHERE Date = :date ")
-    suspend fun getDiaryItem(date: Long): DiaryItemEntity
+    suspend fun getDiaryItem(date: Long?): DiaryItemEntity
 
 }

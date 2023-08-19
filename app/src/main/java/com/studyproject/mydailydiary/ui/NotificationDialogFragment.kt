@@ -10,7 +10,9 @@ import com.google.android.material.timepicker.TimeFormat
 import com.studyproject.mydailydiary.databinding.DialogfragmentNotificationBinding
 import com.studyproject.mydailydiary.databinding.FragmentDrawerBinding
 import com.studyproject.mydailydiary.repository.SharedPreferenceRepository
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class NotificationDialogFragment : Fragment() {
 
     private var binding: DialogfragmentNotificationBinding? = null

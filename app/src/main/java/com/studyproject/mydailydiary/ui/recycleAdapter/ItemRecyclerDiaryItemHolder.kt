@@ -42,9 +42,9 @@ class ItemRecyclerDiaryItemHolder private constructor(val binding: ItemRecyclerD
 
             if (item.data != null) {
                 //добавляем в бэйджик цвет настроения
-                colorBadge.setBackgroundColor(this.root.context.getColor(Mood.values()[item.data.mood].color))
+                colorBadge.setBackgroundColor(this.root.context.getColor(Mood.values()[item.data.mood?:0].color))
                 //добавляем иконку настроения
-                mainIcon.setImageResource(Mood.values()[item.data.mood].iconRes)
+                mainIcon.setImageResource(Mood.values()[item.data.mood?:0].iconRes)
 
                 //добавляем иконки занятий
 
@@ -54,7 +54,7 @@ class ItemRecyclerDiaryItemHolder private constructor(val binding: ItemRecyclerD
                 val dp5 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5F, this.root.context.resources.displayMetrics).toInt()
 
 
-                item.data.doing.forEach {
+                item.data.doing?.forEach {
                     val icon = ImageView(binding.root.context)
                     icon.setImageResource(Doing.values()[it].iconRes)
                     val divider = View(binding.root.context)

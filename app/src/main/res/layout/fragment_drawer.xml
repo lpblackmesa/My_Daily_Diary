@@ -21,7 +21,7 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/header_drawer"
-        app:menu="@menu/menu_drawer">
+        app:menu="@menu/drawer_unlogged_menu">
 
     </com.google.android.material.navigation.NavigationView>
 

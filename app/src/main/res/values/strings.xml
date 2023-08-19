@@ -55,5 +55,14 @@
     <string name="user">User</string>
     <string name="login_successfull">Successfully signed in user</string>
     <string name="login_unsuccessfull">Sign in unsuccessful</string>
+    <string name="set_data_to_firebase">Set Data to Firebase</string>
+    <string name="get_data_from_firebase">Get Data from Firebase</string>
+    <string name="log_out">Log Out</string>
+    <string name="server_delete">Delete from server also</string>
+    <string name="use_firebase">Write to firebase immediately</string>
+    <string name="rewrite_warning">Warning</string>
+    <string name="firebase_rewrite_warning">You can loose your data, if you didn\'t synchronise it before.\nYou may synchronise data before. Continue?</string>
+    <string name="yes">Yes</string>
+
 
 </resources>

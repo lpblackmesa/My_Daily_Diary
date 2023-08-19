@@ -9,14 +9,14 @@ import androidx.room.PrimaryKey
 data class DiaryItemEntity  (
     @PrimaryKey
     @ColumnInfo("Date")
-    val date : Long,
+    val date : Long?,
     @ColumnInfo("Mood")
-    val mood: Int,
+    val mood: Int?,
     @ColumnInfo("Doing")
-    val doing: ArrayList<Int>,
+    val doing: ArrayList<Int>?,
     @ColumnInfo("Text")
-    val text: String,
+    val text: String?,
     @ColumnInfo("Notification")
-    val notification: Boolean
+    val notification: Boolean?
 
 )
