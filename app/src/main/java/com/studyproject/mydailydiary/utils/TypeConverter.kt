@@ -17,12 +17,13 @@ class TypeConverter {
         else 0
     }
     @TypeConverter
-    fun intArrayToString(value: ArrayList<Int>): String {
-        return Gson().toJson(value)
+    fun intArrayToString(value: ArrayList<Int>?): String {
+
+        return if (value!=null) Gson().toJson(value) else ""
     }
     @TypeConverter
     fun stringToIntArray(value: String): ArrayList<Int> {
-        return Gson().fromJson(value, object : TypeToken<ArrayList<Int>>() {}.type)
+        return Gson().fromJson(value, object : TypeToken<ArrayList<Int>>() {}.type)?:arrayListOf()
     }
 
 }

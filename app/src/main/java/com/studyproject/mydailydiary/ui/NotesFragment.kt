@@ -1,6 +1,7 @@
 package com.studyproject.mydailydiary.ui
 
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -42,21 +43,19 @@ class NotesFragment : Fragment(), HolderItemClickListener {
     private var tracker: SelectionTracker<Long>? = null
     private val diaryModel: EditDialogViewModel by activityViewModels()
 
-    fun showDeleteDialog(itemsCount: MutableList<RecycleViewEntity>) {
+    fun showDeleteDialog(itemsCount: ArrayList<DiaryItem>) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.delete_note_dialog))
             .setMessage(getString(R.string.delete_question) + " ${itemsCount.size} " + getString(R.string.elements))
             .setPositiveButton(getString(R.string.delete)) { _, _ ->
-                //удаляем каждый элемент из списка
-                itemsCount.forEach {
-                    if (it.data != null) {
-                        diaryModel.delDiary(it.data)
-                    }
+
+                diaryModel.delDiary(itemsCount)
+                //если включена мгновенная работа с FireBase
+                if (diaryModel.getUseFirebase()) {
+                    diaryModel.delDiaryFromFireBase(itemsCount)
                 }
             }
-
-            .setNegativeButton(getString(R.string.back)) { _, _ ->
-            }
+            .setNegativeButton(getString(R.string.back)) { _, _ -> }
             .show()
     }
 
@@ -76,12 +75,17 @@ class NotesFragment : Fragment(), HolderItemClickListener {
             tracker?.let {
 
                 val mainAdapter = binding?.recyclerView?.adapter as ItemDiaryAdapter
-                //делаем список выделенных элементов recycleEntity
+                //делаем список выделенных элементов RecyclerEntity
+                val arrayDeleted: ArrayList<DiaryItem> = arrayListOf()
                 val selected = mainAdapter.currentList.filter { item ->
                     it.selection.contains(item.id)
                 }.toMutableList()
+                //конвертируем в ArrayList<DiaryItem>
+                selected.forEach { entity ->
+                    if (entity.data != null) arrayDeleted.add(entity.data)
+                }
                 // вызываем диалог с удалением и передаем ему список
-                showDeleteDialog(selected)
+                showDeleteDialog(arrayDeleted)
 
                 it.clearSelection()
             }
@@ -137,7 +141,7 @@ class NotesFragment : Fragment(), HolderItemClickListener {
         }
         //подписываемся на обновления списка из базы данных
         diaryModel.diaryList.observe(viewLifecycleOwner) {
-
+            Log.i("!", "observer $it")
             updateRecycler(getSortedRecyclerItems(it))
 
         }
@@ -198,7 +202,7 @@ class NotesFragment : Fragment(), HolderItemClickListener {
             //LessonEntity(type = TrainingType.HEADER, null, entry.key.))
             // преобразовывем ключ мапы в список RecycleViewEntity
             entry.value.mapTo(newList) {
-                if (it.notification) {
+                if (it.notification == true) {
                     RecycleViewEntity(++id, HolderType.NOTIFY, it, null)
                 } else {
                     RecycleViewEntity(++id, HolderType.DIARY, it, null)
