@@ -10,9 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.studyproject.mydailydiary.R
 import com.studyproject.mydailydiary.repository.SharedPreferenceRepository
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class SplashFragment : Fragment() {
+
+    @Inject
+    lateinit var sharedPreferenceRepository: SharedPreferenceRepository
 
 
     override fun onCreateView(
@@ -20,7 +25,7 @@ class SplashFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-       if (SharedPreferenceRepository.isFirstOpen()) {
+       if (sharedPreferenceRepository.isFirstOpen()) {
         Handler(Looper.getMainLooper()).postDelayed({
             findNavController().navigate(
                 R.id.action_splashFragment_to_onboardingMainFragment) },1500) }

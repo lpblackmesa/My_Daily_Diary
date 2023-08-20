@@ -1,22 +1,21 @@
 package com.studyproject.mydailydiary.models
 
-import android.util.Log
+
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.studyproject.mydailydiary.data.DiaryItem
 import com.studyproject.mydailydiary.repository.DiaryRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class EditDialogViewModel : ViewModel() {
+@HiltViewModel
+class EditDialogViewModel @Inject constructor(private val diaryRep : DiaryRepository) : ViewModel() {
 
     //хранилище списка дневника
     val diaryList = MutableLiveData<ArrayList<DiaryItem>>()
-
-    //обьект-репозиторий дневника
-    private val diaryRep = DiaryRepository()
 
     //новый или измененный обьект из Диалога
     val diary_mesage: MutableLiveData<DiaryItem> by lazy {

@@ -1,37 +1,26 @@
 package com.studyproject.mydailydiary.repository
 
 import android.util.Log
-import android.widget.Toast
-import androidx.lifecycle.viewModelScope
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.studyproject.mydailydiary.data.DiaryItem
 import com.studyproject.mydailydiary.data.entity.DiaryItemEntity
-import com.studyproject.mydailydiary.db.DiaryDB
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.asDeferred
+import com.studyproject.mydailydiary.db.DiaryDAO
 import kotlinx.coroutines.tasks.await
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import javax.inject.Inject
 
 
-class DiaryRepository {
+class DiaryRepository @Inject constructor(
+    private val diaryDAO: DiaryDAO, private val database: FirebaseDatabase
+) {
 
 
     suspend fun getDiaryFromFireBase(): ArrayList<DiaryItem> {
-        val database = Firebase.database
         //создание пустого списка DiaryItem
-        var arrayDiaryItem: ArrayList<DiaryItem> = arrayListOf()
+        val arrayDiaryItem: ArrayList<DiaryItem> = arrayListOf()
         //если есть залогиненый пользователь
         FirebaseAuth.getInstance().currentUser?.let { user ->
             //заходим в папку пользователя
@@ -52,7 +41,6 @@ class DiaryRepository {
 
     //запись массива данных в Firebase
     suspend fun setDiaryToFireBase(diary: ArrayList<DiaryItem>) {
-        val database = Firebase.database
         FirebaseAuth.getInstance().currentUser?.let {
             val myRef = database.getReference(it.uid)
 
@@ -68,7 +56,6 @@ class DiaryRepository {
 
     //запись одного item в Firebase
     suspend fun setDiaryToFireBase(diaryItem: DiaryItem) {
-        val database = Firebase.database
         //если есть Юзер
         FirebaseAuth.getInstance().currentUser?.let { user ->
             //записываем в ветку Айди Юзер
@@ -80,7 +67,6 @@ class DiaryRepository {
 
     //удаление одного item в Firebase
     suspend fun delDiaryFromFireBase(diaryItem: DiaryItem) {
-        val database = Firebase.database
         //если есть Юзер
         FirebaseAuth.getInstance().currentUser?.let { user ->
             //записываем в ветку Айди Юзер
@@ -91,7 +77,6 @@ class DiaryRepository {
     }
 
     suspend fun delDiaryFromFireBase(diary: ArrayList<DiaryItem>) {
-        val database = Firebase.database
         FirebaseAuth.getInstance().currentUser?.let {
             val myRef = database.getReference(it.uid)
 
@@ -108,7 +93,7 @@ class DiaryRepository {
 
 
     suspend fun getDiary(): ArrayList<DiaryItem> {
-        return (DiaryDB.diaryDAO?.getDiary()?.map {
+        return (diaryDAO.getDiary().map {
             DiaryItem(
                 it.date,
                 it.mood,
@@ -120,7 +105,7 @@ class DiaryRepository {
     }
 
     suspend fun getDiaryItem(diaryItem: DiaryItem): DiaryItem {
-        return DiaryDB.diaryDAO?.getDiaryItem(diaryItem.date)?.let {
+        return diaryDAO.getDiaryItem(diaryItem.date).let {
             DiaryItem(
                 it.date,
                 it.mood,
@@ -134,7 +119,7 @@ class DiaryRepository {
     suspend fun addDiary(diaryItem: DiaryItem) {
 
         Log.i("!", "addDiary value $diaryItem")
-        DiaryDB.diaryDAO?.insertDiaryItem(
+        diaryDAO.insertDiaryItem(
             DiaryItemEntity(
                 diaryItem.date,
                 diaryItem.mood,
@@ -146,7 +131,7 @@ class DiaryRepository {
     }
 
     suspend fun delDiary(diaryItem: DiaryItem) {
-        DiaryDB.diaryDAO?.delDiaryItem(
+        diaryDAO.delDiaryItem(
             DiaryItemEntity(
                 diaryItem.date,
                 diaryItem.mood,

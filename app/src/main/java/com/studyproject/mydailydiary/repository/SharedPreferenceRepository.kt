@@ -3,19 +3,20 @@ package com.studyproject.mydailydiary.repository
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val SETTINGS_FILE = "settingsFile"
-private const val USER_PROFILE_FILE = "userProfileFile"
 private const val IS_FIRST_OPEN = "isFirstOpen"
 
-object SharedPreferenceRepository {
+@Singleton
+class SharedPreferenceRepository @Inject constructor(@ApplicationContext context: Context) {
 
     private var sharedPreferences: SharedPreferences? = null
-    private var userPreferences: SharedPreferences? = null
 
-    fun init(context: Context) {
+     init{
         sharedPreferences = context.getSharedPreferences(SETTINGS_FILE, Context.MODE_PRIVATE)
-        userPreferences = context.getSharedPreferences(USER_PROFILE_FILE, Context.MODE_PRIVATE)
     }
 
     fun setIsFirstOpen() {
