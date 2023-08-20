@@ -11,6 +11,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.studyproject.mydailydiary.R
 import com.studyproject.mydailydiary.databinding.FragmentOnboardingMainBinding
+import dagger.hilt.android.AndroidEntryPoint
+
 
 class OnboardingMainFragment : Fragment() {
 

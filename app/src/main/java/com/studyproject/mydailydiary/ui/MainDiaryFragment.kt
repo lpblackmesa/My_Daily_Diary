@@ -36,10 +36,13 @@ import com.studyproject.mydailydiary.models.LoginViewModel
 import com.studyproject.mydailydiary.repository.SharedPreferenceRepository
 import com.studyproject.mydailydiary.ui.viewPagerAdapter.ViewPagerAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedListener {
 
+    @Inject
+    lateinit var sharedPreferenceRepository: SharedPreferenceRepository
 
     private var binding: FragmentDrawerBinding? = null
     private val loginViewModel by viewModels<LoginViewModel>()
@@ -155,7 +158,7 @@ class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedLis
 
 
         //переводим флаг в состояние "не первый запуск"
-        SharedPreferenceRepository.setIsFirstOpen()
+        sharedPreferenceRepository.setIsFirstOpen()
         // Inflate the layout for this fragment
         binding = FragmentDrawerBinding.inflate(inflater, container, false)
         return binding?.root
