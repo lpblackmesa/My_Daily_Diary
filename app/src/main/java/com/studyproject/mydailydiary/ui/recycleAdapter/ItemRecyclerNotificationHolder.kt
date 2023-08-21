@@ -9,6 +9,7 @@ import com.studyproject.mydailydiary.R
 import com.studyproject.mydailydiary.data.HolderType
 import com.studyproject.mydailydiary.data.entity.RecycleViewEntity
 import com.studyproject.mydailydiary.databinding.ItemNotificationBinding
+import java.text.SimpleDateFormat
 
 class ItemRecyclerNotificationHolder private constructor(val binding: ItemNotificationBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -30,7 +31,8 @@ class ItemRecyclerNotificationHolder private constructor(val binding: ItemNotifi
                 frame.setBackgroundResource(R.drawable.frame)
                 selectIcon.isVisible = false
             }
-            text.setText(item.data?.text)
+            text.text = item.data?.text
+            time.text = SimpleDateFormat("HH:mm").format(item.data?.date)
         }
         itemView.setOnClickListener {
             listener.onHolderItemClick(item)

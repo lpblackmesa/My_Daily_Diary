@@ -1,7 +1,13 @@
 package com.studyproject.mydailydiary.ui
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.DialogInterface
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context.NOTIFICATION_SERVICE
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,15 +18,18 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ActionMode
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.studyproject.mydailydiary.R
 import com.studyproject.mydailydiary.data.DiaryItem
 import com.studyproject.mydailydiary.data.HolderType
@@ -28,11 +37,14 @@ import com.studyproject.mydailydiary.data.Keys
 import com.studyproject.mydailydiary.data.entity.RecycleViewEntity
 import com.studyproject.mydailydiary.databinding.FragmentNotesBinding
 import com.studyproject.mydailydiary.models.EditDialogViewModel
+import com.studyproject.mydailydiary.ui.MainActivity.Companion.EXTRA_NOTIFY
+import com.studyproject.mydailydiary.ui.MainActivity.Companion.NOTIFICATION
 import com.studyproject.mydailydiary.ui.recycleAdapter.CustomSelectionPredicate
 import com.studyproject.mydailydiary.ui.recycleAdapter.HolderItemClickListener
 import com.studyproject.mydailydiary.ui.recycleAdapter.ItemDiaryAdapter
 import com.studyproject.mydailydiary.ui.recycleAdapter.ItemLookup
 import com.studyproject.mydailydiary.ui.recycleAdapter.ItemsKeyProvider
+import com.studyproject.mydailydiary.workers.NotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 
@@ -42,6 +54,17 @@ class NotesFragment : Fragment(), HolderItemClickListener {
     private var binding: FragmentNotesBinding? = null
     private var tracker: SelectionTracker<Long>? = null
     private val diaryModel: EditDialogViewModel by activityViewModels()
+
+    //notification variables
+    val CHANNEL_ID = "channel_ID"
+    val CHANNEL_NAME = "channel_NAME"
+    val NOTIFICATION_ID = 0
+
+    fun notificationWorker(){
+        val  myWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>().build()
+        WorkManager.getInstance(requireContext()).enqueue(myWorkRequest)
+    }
+
 
     fun showDeleteDialog(itemsCount: ArrayList<DiaryItem>) {
         AlertDialog.Builder(requireContext())
@@ -125,12 +148,59 @@ class NotesFragment : Fragment(), HolderItemClickListener {
         return binding?.root
     }
 
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val descriptionText = "descriptionText"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                requireContext().getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+
+    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //запрашиваем значения списка из репозитория через viewmodel и обновляем
         diaryModel.getAllDiary()
 
         setHasOptionsMenu(true)
+
+        createNotificationChannel()
+
+
+        //open the app from outside the app
+        val intent = Intent(requireContext(), MainActivity::class.java)
+        intent.putExtra(EXTRA_NOTIFY,1692542726283)
+        intent.action = NOTIFICATION
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        //DiaryItem(1,1,null,"1",true)
+
+//        val pendingIntent = TaskStackBuilder.create(requireContext()).run{
+//            addNextIntentWithParentStack(intent)
+//            getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
+//        }
+
+        val pendingIntent = PendingIntent.getActivity(requireContext(), 0, intent,  PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val builder = NotificationCompat.Builder(requireContext(), CHANNEL_ID)
+            .setSmallIcon(R.drawable.notifications)
+            .setContentTitle("Напоминание")
+            .setContentText("Пора покормить кота")
+           // .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+
+        val notificationManager = NotificationManagerCompat.from(requireContext())
+        notificationManager.notify(NOTIFICATION_ID, builder.build())
 
 
         //подписываемся на обновления message , если есть изменения, добавляем
@@ -139,6 +209,17 @@ class NotesFragment : Fragment(), HolderItemClickListener {
                 diaryModel.addDiaryItem(it)
             }
         }
+
+        //подписываемся на обновление Item, который запросила Notification
+        diaryModel.diaryItem.observe(viewLifecycleOwner) {
+            if (it.notification == true) {
+                //запуск диалога с нотификайией
+                showDialogFragment(Keys.SHOW_NOTIFY,it)
+            }
+        }
+
+
+
         //подписываемся на обновления списка из базы данных
         diaryModel.diaryList.observe(viewLifecycleOwner) {
             Log.i("!", "observer $it")
@@ -163,12 +244,7 @@ class NotesFragment : Fragment(), HolderItemClickListener {
         binding?.fabAddNotification?.setOnClickListener {
             initFAB()
             //запуск ДиалогФрагмента
-
-//            val editDiaryDialog = EditDiaryDialogFragment()
-//            editDiaryDialog.arguments = bundleOf(Keys.CREATE_NOTIFY.KEY to Keys.CREATE_NOTIFY.VALUE, Keys.ITEM.KEY to DiaryItem(1212143542, 2, arrayListOf(0, 1, 2, 4), "text!", false))
-//            val transaction: FragmentTransaction = parentFragmentManager.beginTransaction()
-//            editDiaryDialog.show(transaction, Keys.CREATE_NOTIFY.VALUE)
-
+            showDialogFragment(Keys.CREATE_NOTIFY, null)
         }
 
 
@@ -274,17 +350,19 @@ class NotesFragment : Fragment(), HolderItemClickListener {
     }
 
     private fun showDialogFragment(type: Keys, item: DiaryItem?) {
-
-        val editDiaryDialog = EditDiaryDialogFragment()
-        editDiaryDialog.arguments = bundleOf(
+        var diaryDialog = DialogFragment()
+        diaryDialog = if (type.name == Keys.SHOW.name || type.name == Keys.CREATE.name || type.name == Keys.EDIT.name ) {
+            EditDiaryDialogFragment()
+        } else {
+            NotificationDialogFragment()
+        }
+        diaryDialog.arguments = bundleOf(
             type.KEY to type.VALUE,
             Keys.ITEM.KEY to item
         )
         val transaction: FragmentTransaction = parentFragmentManager.beginTransaction()
-        editDiaryDialog.show(transaction, type.VALUE)
-
+        diaryDialog.show(transaction, type.VALUE)
     }
-
 
     // функция управления поведением кнопок при нажатии
     private fun initFAB() {
@@ -313,7 +391,7 @@ class NotesFragment : Fragment(), HolderItemClickListener {
     override fun onHolderItemClick(item: RecycleViewEntity) {
         when (item.type) {
             HolderType.DIARY -> showDialogFragment(Keys.SHOW, item.data)
-            // HolderType.NOTIFY ->
+            HolderType.NOTIFY -> showDialogFragment(Keys.SHOW_NOTIFY, item.data)
             else -> { //throw IllegalArgumentException("Invalid view type in RecycleViewEntity")
             }
         }

@@ -41,8 +41,9 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.android.gms:play-services-auth:20.6.0'
+    implementation "androidx.work:work-runtime-ktx:2.8.1"
 
+    implementation 'com.google.android.gms:play-services-auth:20.6.0'
 
     implementation 'com.squareup.picasso:picasso:2.8'
 
