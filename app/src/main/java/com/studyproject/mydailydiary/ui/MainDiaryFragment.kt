@@ -218,19 +218,18 @@ class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedLis
                                     diaryModel.setUseFirebase(b)
                                 }
                             }
-
                         }
                         binding?.drawer?.invalidate()
                         headerBinding?.textView?.text = FirebaseAuth.getInstance().currentUser?.uid
                         headerBinding?.userText?.text =
                             FirebaseAuth.getInstance().currentUser?.displayName
-                        Picasso.get().load(FirebaseAuth.getInstance().currentUser?.photoUrl)
+                        Picasso.get().load(FirebaseAuth.getInstance().currentUser?.photoUrl.toString())
                             .resize(200, 200)
                             .centerCrop()
-                            .into(headerBinding?.imageView);
-
+                            .placeholder(R.drawable.menu_book)
+                            .error(R.drawable.achievement)
+                            .into(headerBinding?.imageView)
                     }
-
                     else -> {
                         diaryModel.setUseFirebase(false)
                         binding?.navView?.let {
@@ -238,9 +237,10 @@ class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedLis
                             it.inflateMenu(R.menu.drawer_unlogged_menu)
                         }
                         binding?.drawer?.invalidate()
-                        headerBinding?.userText?.text = getString(R.string.user)
-                        headerBinding?.imageView?.setImageResource(R.drawable.menu_book)
-
+                        headerBinding?.let {
+                            it.userText.text = getString(R.string.user)
+                            it.imageView.setImageResource(R.drawable.menu_book_white)
+                        }
                     }
                 }
             }
