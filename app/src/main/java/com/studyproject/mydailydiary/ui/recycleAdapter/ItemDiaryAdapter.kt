@@ -31,7 +31,7 @@ class ItemDiaryAdapter(private val listener: HolderItemClickListener) :
         }) {
 
 
-    var tracker: SelectionTracker<Long>? = null
+    private var tracker: SelectionTracker<Long>? = null
 
     init {
         // нужный параметр, если брать ключ из параметра getItemId
@@ -85,13 +85,15 @@ class ItemDiaryAdapter(private val listener: HolderItemClickListener) :
 
                 is ItemRecyclerDiaryItemHolder -> holder.bind(
                     getItem(position),
-                    it.isSelected(currentList[position].id),listener)
+                    it.isSelected(currentList[position].id), listener
+                )
 
-                is ItemRecyclerHeaderHolder -> holder.bind(getItem(position),listener)
+                is ItemRecyclerHeaderHolder -> holder.bind(getItem(position), listener)
 
                 is ItemRecyclerNotificationHolder -> holder.bind(
                     getItem(position),
-                    it.isSelected(currentList[position].id),listener)
+                    it.isSelected(currentList[position].id), listener
+                )
             }
         }
     }

@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
 
     <CheckBox
         android:id="@+id/checkBoxNotification"
-        android:text="@string/notification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:checked="true"
+        android:text="@string/notification"
         android:textSize="20dp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/dateText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginStart="5dp"
-        android:text="Notification setted to "
+        android:layout_marginTop="8dp"
+        android:text="@string/notification_setted_to"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxNotification" />
 
@@ -33,61 +33,59 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="23 december 2023"
-        app:layout_constraintTop_toTopOf="@id/dateText"
-
-        app:layout_constraintStart_toEndOf="@id/dateText" />
+        tools:text="23 december 2023"
+        app:layout_constraintStart_toEndOf="@id/dateText"
+        app:layout_constraintTop_toTopOf="@id/dateText" />
 
     <ImageButton
         android:id="@+id/editDateButton"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        app:srcCompat="@drawable/edit_calendar"
         android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/date"
         app:layout_constraintBottom_toBottomOf="@id/date"
-        app:layout_constraintStart_toEndOf="@id/date"/>
+        app:layout_constraintStart_toEndOf="@id/date"
+        app:layout_constraintTop_toTopOf="@id/date"
+        app:srcCompat="@drawable/edit_calendar" />
 
     <TextView
         android:id="@+id/timeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"
-        android:text="Started time is"
+        android:layout_marginTop="8dp"
+        android:text="@string/started_time_is"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dateText" />
 
-    <TextClock
+    <TextView
         android:id="@+id/textClock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="1200"
-        app:layout_constraintTop_toTopOf="@id/timeText"
+        tools:text="12 00"
         app:layout_constraintBottom_toBottomOf="@id/timeText"
-        app:layout_constraintStart_toEndOf="@id/timeText"/>
+        app:layout_constraintStart_toEndOf="@id/timeText"
+        app:layout_constraintTop_toTopOf="@id/timeText" />
 
     <ImageButton
         android:id="@+id/editTimeButton"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        app:srcCompat="@drawable/more_time"
         android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/timeText"
         app:layout_constraintBottom_toBottomOf="@id/timeText"
-        app:layout_constraintStart_toEndOf="@id/textClock"/>
-
+        app:layout_constraintStart_toEndOf="@id/textClock"
+        app:layout_constraintTop_toTopOf="@id/timeText"
+        app:srcCompat="@drawable/more_time" />
 
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/messageLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="15dp"
         app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintTop_toBottomOf="@id/textClock"
-        android:layout_marginTop="15dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textClock">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/messageEdit"
@@ -98,5 +96,14 @@
             android:lines="20"
             android:singleLine="false" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <CheckBox
+        android:id="@+id/repeatCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/repeat_every_year"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

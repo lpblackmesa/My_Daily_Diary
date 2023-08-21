@@ -12,7 +12,6 @@ class ViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
     override fun getItemCount(): Int = 3
 
     override fun createFragment(position: Int): Fragment {
-
         //возвращение фрагментов в зависимости от позиции
         return when (position) {
             0 -> NotesFragment.newInstance()

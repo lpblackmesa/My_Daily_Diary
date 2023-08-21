@@ -10,5 +10,4 @@ class ItemsKeyProvider(private val adapter: ItemDiaryAdapter) : ItemKeyProvider<
     override fun getPosition(key: Long): Int {
         return adapter.currentList.indexOfFirst { it.id == key }
     }
-
 }

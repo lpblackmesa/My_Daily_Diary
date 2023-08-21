@@ -6,13 +6,12 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.studyproject.mydailydiary.R
-import com.studyproject.mydailydiary.data.HolderType
 import com.studyproject.mydailydiary.data.entity.RecycleViewEntity
 import com.studyproject.mydailydiary.databinding.ItemNotificationBinding
 import java.text.SimpleDateFormat
 
-class ItemRecyclerNotificationHolder private constructor(val binding: ItemNotificationBinding) : RecyclerView.ViewHolder(binding.root) {
-
+class ItemRecyclerNotificationHolder private constructor(val binding: ItemNotificationBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
     // позиции и ключа выбора элемента associated with our view holder
     fun getItemDetails(): ItemDetailsLookup.ItemDetails<Long> =
@@ -21,15 +20,17 @@ class ItemRecyclerNotificationHolder private constructor(val binding: ItemNotifi
             override fun getSelectionKey(): Long = itemId
         }
 
-    fun bind(item: RecycleViewEntity, selected : Boolean, listener : HolderItemClickListener) {
+    fun bind(item: RecycleViewEntity, selected: Boolean, listener: HolderItemClickListener) {
 
         binding.run {
             if (selected) {
                 frame.setBackgroundResource(R.drawable.frame_checked)
                 selectIcon.isVisible = true
+                time.isVisible = false
             } else {
                 frame.setBackgroundResource(R.drawable.frame)
                 selectIcon.isVisible = false
+                time.isVisible = true
             }
             text.text = item.data?.text
             time.text = SimpleDateFormat("HH:mm").format(item.data?.date)
@@ -40,11 +41,11 @@ class ItemRecyclerNotificationHolder private constructor(val binding: ItemNotifi
     }
 
 
-
     //статическая функция inflate биндинг, вызываемая из адаптера
     companion object {
         fun from(parent: ViewGroup): ItemRecyclerNotificationHolder {
-            val binding = ItemNotificationBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            val binding =
+                ItemNotificationBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             return ItemRecyclerNotificationHolder(binding)
         }
     }

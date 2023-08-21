@@ -6,9 +6,9 @@
     <string name="calendar">Calendar</string>
     <string name="achievements">Achievements</string>
     <string name="skip_text">Skip</string>
-    <string name="onboarding_description_1">There is 1 text with description</string>
-    <string name="onboarding_description_2">There is 2 text with description</string>
-    <string name="onboarding_description_3">There is 3 text with description</string>
+    <string name="onboarding_description_1">Save your notes offline and online</string>
+    <string name="onboarding_description_2">Сomfortable way to write all your activity</string>
+    <string name="onboarding_description_3">Set goals and achieve achievements</string>
     <string name="next">Next</string>
     <string name="back">Back</string>
     <string name="finish">Finish</string>
@@ -43,14 +43,12 @@
     <string name="edit">Edit</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment">Settings</string>
     <string name="settings">Settings</string>
     <string name="search">Search</string>
     <string name="notification">Notification</string>
     <string name="delete_note_dialog">Deleting</string>
-    <string name="delete_question">"Do you really want to delete these"</string>
-    <string name="elements">elements</string>
+    <string name="delete_question">"Do you really want to delete these elements"</string>
     <string name="selected">Selected :</string>
     <string name="user">User</string>
     <string name="login_successfull">Successfully signed in user</string>
@@ -58,13 +56,15 @@
     <string name="set_data_to_firebase">Set Data to Firebase</string>
     <string name="get_data_from_firebase">Get Data from Firebase</string>
     <string name="log_out">Log Out</string>
-    <string name="server_delete">Delete from server also</string>
     <string name="use_firebase">Write to firebase immediately</string>
     <string name="rewrite_warning">Warning</string>
     <string name="firebase_rewrite_warning">You can loose your data, if you didn\'t synchronise it before.\nYou may synchronise data before. Continue?</string>
     <string name="yes">Yes</string>
     <string name="select_date">Select date</string>
     <string name="select_time">Select time</string>
-
+    <string name="repeat_every_year">Repeat every Year</string>
+    <string name="login">Login</string>
+    <string name="notification_setted_to">Notification setted to</string>
+    <string name="started_time_is">Started time is</string>
 
 </resources>

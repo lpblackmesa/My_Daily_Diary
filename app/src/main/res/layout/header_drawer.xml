@@ -27,13 +27,15 @@
         app:layout_constraintBottom_toTopOf="@+id/userText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/menu_book" />
+        app:srcCompat="@drawable/menu_book"
+        app:tint="#FFFFFF" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
+        android:visibility="invisible"
         android:textColor="#FFFFFF"
         app:layout_constraintTop_toBottomOf="@id/userText"
         app:layout_constraintStart_toStartOf="parent"/>

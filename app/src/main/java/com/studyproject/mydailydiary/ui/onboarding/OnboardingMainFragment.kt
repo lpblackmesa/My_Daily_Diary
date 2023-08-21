@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.studyproject.mydailydiary.R
 import com.studyproject.mydailydiary.databinding.FragmentOnboardingMainBinding
-import dagger.hilt.android.AndroidEntryPoint
+
 
 
 class OnboardingMainFragment : Fragment() {

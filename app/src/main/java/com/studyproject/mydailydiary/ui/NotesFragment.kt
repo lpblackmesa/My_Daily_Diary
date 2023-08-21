@@ -1,13 +1,6 @@
 package com.studyproject.mydailydiary.ui
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context.NOTIFICATION_SERVICE
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -19,8 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentTransaction
@@ -28,6 +19,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.studyproject.mydailydiary.R
@@ -38,7 +30,6 @@ import com.studyproject.mydailydiary.data.entity.RecycleViewEntity
 import com.studyproject.mydailydiary.databinding.FragmentNotesBinding
 import com.studyproject.mydailydiary.models.EditDialogViewModel
 import com.studyproject.mydailydiary.ui.MainActivity.Companion.EXTRA_NOTIFY
-import com.studyproject.mydailydiary.ui.MainActivity.Companion.NOTIFICATION
 import com.studyproject.mydailydiary.ui.recycleAdapter.CustomSelectionPredicate
 import com.studyproject.mydailydiary.ui.recycleAdapter.HolderItemClickListener
 import com.studyproject.mydailydiary.ui.recycleAdapter.ItemDiaryAdapter
@@ -47,6 +38,8 @@ import com.studyproject.mydailydiary.ui.recycleAdapter.ItemsKeyProvider
 import com.studyproject.mydailydiary.workers.NotificationWorker
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class NotesFragment : Fragment(), HolderItemClickListener {
@@ -54,34 +47,6 @@ class NotesFragment : Fragment(), HolderItemClickListener {
     private var binding: FragmentNotesBinding? = null
     private var tracker: SelectionTracker<Long>? = null
     private val diaryModel: EditDialogViewModel by activityViewModels()
-
-    //notification variables
-    val CHANNEL_ID = "channel_ID"
-    val CHANNEL_NAME = "channel_NAME"
-    val NOTIFICATION_ID = 0
-
-    fun notificationWorker(){
-        val  myWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>().build()
-        WorkManager.getInstance(requireContext()).enqueue(myWorkRequest)
-    }
-
-
-    fun showDeleteDialog(itemsCount: ArrayList<DiaryItem>) {
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.delete_note_dialog))
-            .setMessage(getString(R.string.delete_question) + " ${itemsCount.size} " + getString(R.string.elements))
-            .setPositiveButton(getString(R.string.delete)) { _, _ ->
-
-                diaryModel.delDiary(itemsCount)
-                //если включена мгновенная работа с FireBase
-                if (diaryModel.getUseFirebase()) {
-                    diaryModel.delDiaryFromFireBase(itemsCount)
-                }
-            }
-            .setNegativeButton(getString(R.string.back)) { _, _ -> }
-            .show()
-    }
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         tracker?.let {
@@ -96,7 +61,6 @@ class NotesFragment : Fragment(), HolderItemClickListener {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_delete -> {
             tracker?.let {
-
                 val mainAdapter = binding?.recyclerView?.adapter as ItemDiaryAdapter
                 //делаем список выделенных элементов RecyclerEntity
                 val arrayDeleted: ArrayList<DiaryItem> = arrayListOf()
@@ -109,13 +73,11 @@ class NotesFragment : Fragment(), HolderItemClickListener {
                 }
                 // вызываем диалог с удалением и передаем ему список
                 showDeleteDialog(arrayDeleted)
-
                 it.clearSelection()
             }
             ActivityCompat.invalidateOptionsMenu(requireActivity())
             true
         }
-
         R.id.action_edit -> {
             tracker?.let {
 
@@ -131,10 +93,7 @@ class NotesFragment : Fragment(), HolderItemClickListener {
             ActivityCompat.invalidateOptionsMenu(requireActivity())
             true
         }
-
         else -> {
-            // If we got here, the user's action was not recognized.
-            // Invoke the superclass to handle it.
             super.onOptionsItemSelected(item)
         }
     }
@@ -148,60 +107,14 @@ class NotesFragment : Fragment(), HolderItemClickListener {
         return binding?.root
     }
 
-    private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val descriptionText = "descriptionText"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
-                description = descriptionText
-            }
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                requireContext().getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-
-    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //запрашиваем значения списка из репозитория через viewmodel и обновляем
         diaryModel.getAllDiary()
-
+        //устанавливаем меню в AppBar
+        val appCompatActivity = activity as AppCompatActivity
         setHasOptionsMenu(true)
-
-        createNotificationChannel()
-
-
-        //open the app from outside the app
-        val intent = Intent(requireContext(), MainActivity::class.java)
-        intent.putExtra(EXTRA_NOTIFY,1692542726283)
-        intent.action = NOTIFICATION
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-        //DiaryItem(1,1,null,"1",true)
-
-//        val pendingIntent = TaskStackBuilder.create(requireContext()).run{
-//            addNextIntentWithParentStack(intent)
-//            getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
-//        }
-
-        val pendingIntent = PendingIntent.getActivity(requireContext(), 0, intent,  PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-
-        val builder = NotificationCompat.Builder(requireContext(), CHANNEL_ID)
-            .setSmallIcon(R.drawable.notifications)
-            .setContentTitle("Напоминание")
-            .setContentText("Пора покормить кота")
-           // .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-
-        val notificationManager = NotificationManagerCompat.from(requireContext())
-        notificationManager.notify(NOTIFICATION_ID, builder.build())
-
+        ActivityCompat.invalidateOptionsMenu(appCompatActivity)
 
         //подписываемся на обновления message , если есть изменения, добавляем
         diaryModel.diary_mesage.observe(viewLifecycleOwner) {
@@ -209,24 +122,24 @@ class NotesFragment : Fragment(), HolderItemClickListener {
                 diaryModel.addDiaryItem(it)
             }
         }
+        //подписываемся на обновления списка с нотификациями, для добавления их в WorkManager
+        diaryModel.diaryNotifyList.observe(viewLifecycleOwner) {
+            setWorkManager(it)
+        }
 
         //подписываемся на обновление Item, который запросила Notification
         diaryModel.diaryItem.observe(viewLifecycleOwner) {
             if (it.notification == true) {
                 //запуск диалога с нотификайией
-                showDialogFragment(Keys.SHOW_NOTIFY,it)
+                showDialogFragment(Keys.SHOW_NOTIFY, it)
             }
         }
-
-
 
         //подписываемся на обновления списка из базы данных
         diaryModel.diaryList.observe(viewLifecycleOwner) {
             Log.i("!", "observer $it")
             updateRecycler(getSortedRecyclerItems(it))
-
         }
-
 
         //устанавливаем плавающую кнопку в начальное положение
         binding?.fabAdd?.shrink()
@@ -239,28 +152,23 @@ class NotesFragment : Fragment(), HolderItemClickListener {
             initFAB()
             //вызываем диалог добавления заметки
             showDialogFragment(Keys.CREATE, null)
-
         }
         binding?.fabAddNotification?.setOnClickListener {
             initFAB()
             //запуск ДиалогФрагмента
             showDialogFragment(Keys.CREATE_NOTIFY, null)
         }
-
-
     }
-
 
     private fun getSortedRecyclerItems(baseItem: ArrayList<DiaryItem>): ArrayList<RecycleViewEntity> {
         //создаем список с сортированным ссписком DiaryItem
         val list = baseItem.sortedByDescending {
             it.date
         }
-//создаем мапу с ключом - дата, значение - список элементов с этой датой
+        //создаем мапу с ключом - дата, значение - список элементов с этой датой
         val map = emptyMap<String, ArrayList<DiaryItem>>().toMutableMap()
         list.forEach {
             //ключ мапы - дата "dd MMMM yyyy". Если такая уже есть, добавляем туда
-
             val dateStr = SimpleDateFormat("dd MMMM yyyy").format(it.date)
             if (map[dateStr] == null) {
                 map[dateStr] = ArrayList()
@@ -271,11 +179,10 @@ class NotesFragment : Fragment(), HolderItemClickListener {
         val newList = ArrayList<RecycleViewEntity>()
         var id: Long = 0
         map.forEach() { entry ->
-//добавляем в список заголовок с датой
+        //добавляем в список заголовок с датой
             newList.add(
                 RecycleViewEntity(++id, HolderType.HEADER, null, entry.value[0].date)
             )
-            //LessonEntity(type = TrainingType.HEADER, null, entry.key.))
             // преобразовывем ключ мапы в список RecycleViewEntity
             entry.value.mapTo(newList) {
                 if (it.notification == true) {
@@ -288,16 +195,12 @@ class NotesFragment : Fragment(), HolderItemClickListener {
         return newList
     }
 
-
     //функция обновления recycler
     private fun updateRecycler(list: ArrayList<RecycleViewEntity>) {
         //инициализация recyclerView
         binding?.recyclerView?.run {
             if (adapter == null) {
-
-                //????
                 setHasFixedSize(true)
-
                 val mainAdapter = ItemDiaryAdapter(this@NotesFragment)
                 //создаем tracker для работы с выделением item в recyclerView
                 binding?.let {
@@ -334,7 +237,6 @@ class NotesFragment : Fragment(), HolderItemClickListener {
                     }
                     //передаем в адаптер tracker
                     mainAdapter.setMyTracker(tracker)
-
                 }
             }
             (adapter as? ItemDiaryAdapter)?.submitList(list)
@@ -343,19 +245,16 @@ class NotesFragment : Fragment(), HolderItemClickListener {
         }
     }
 
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         tracker?.onSaveInstanceState(outState)
     }
-
     private fun showDialogFragment(type: Keys, item: DiaryItem?) {
-        var diaryDialog = DialogFragment()
-        diaryDialog = if (type.name == Keys.SHOW.name || type.name == Keys.CREATE.name || type.name == Keys.EDIT.name ) {
-            EditDiaryDialogFragment()
-        } else {
-            NotificationDialogFragment()
-        }
+        val diaryDialog: DialogFragment = if (type.name == Keys.SHOW.name || type.name == Keys.CREATE.name || type.name == Keys.EDIT.name) {
+                EditDiaryDialogFragment()
+            } else {
+                NotificationDialogFragment()
+            }
         diaryDialog.arguments = bundleOf(
             type.KEY to type.VALUE,
             Keys.ITEM.KEY to item
@@ -397,11 +296,57 @@ class NotesFragment : Fragment(), HolderItemClickListener {
         }
     }
 
-    companion object {
+    //функция добавления запланированных нотификаций в WorkManager
+    private fun setWorkManager(list: ArrayList<DiaryItem>) {
+        WorkManager.getInstance(requireContext()).cancelAllWork()
+        list.forEach {
+        //текущее время, и переменная с временем на год вперед
+            val date = Calendar.getInstance()
+            val nextYearDate = Calendar.getInstance()
+            //Создаем  Data для добавления информации в WorkManager.
+            val data = Data.Builder()
+            //текст уведомления
+            data.putString(MainActivity.NOTIFICATION_TEXT, it.text)
+            // ID заметки, ID для запроса item из БД
+            it.date?.let { id ->
+                data.putLong(EXTRA_NOTIFY, id)
+                //если дата в списке впереди текущей даты или повторять напоминание каждый год
+                if ((id - date.timeInMillis > 0) || ((it.mood ?: 0) > 0)) {
+                    val newDate: Long
+                    //если просто повторять каждый год
+                    if ((it.mood ?: 0) > 0 && (id - date.timeInMillis < 0)) {
+                        nextYearDate.timeInMillis = id
+                        //добавляем во время еще год
+                        nextYearDate.set(Calendar.YEAR, nextYearDate.get(Calendar.YEAR) + 1)
+                        newDate = nextYearDate.timeInMillis
+                    } else {
+                        newDate = id
+                    }
 
+                    val dailyWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
+                        .setInitialDelay(newDate - date.timeInMillis, TimeUnit.MILLISECONDS)
+                        .addTag(id.toString())
+                        .setInputData(data.build())
+                        .build()
+                    WorkManager.getInstance(requireContext()).enqueue(dailyWorkRequest)
+                }
+            }
+        }
+    }
+    fun showDeleteDialog(itemsCount: ArrayList<DiaryItem>) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.delete_note_dialog))
+            .setMessage(getString(R.string.delete_question))
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
+                diaryModel.delDiary(itemsCount)
+            }
+            .setNegativeButton(getString(R.string.back)) { _, _ -> }
+            .show()
+    }
+
+    companion object {
         @JvmStatic
         fun newInstance() =
             NotesFragment()
     }
-
 }
