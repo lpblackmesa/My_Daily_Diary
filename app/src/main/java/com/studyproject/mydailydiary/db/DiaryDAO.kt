@@ -5,7 +5,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.studyproject.mydailydiary.data.DiaryItem
 import com.studyproject.mydailydiary.data.entity.DiaryItemEntity
 
 @Dao

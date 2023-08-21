@@ -13,7 +13,6 @@ import com.studyproject.mydailydiary.databinding.ItemSpinnerDroppedBinding
 class SpinnerCustomAdapter(context: Context, val moods: Array<Mood>) :
     ArrayAdapter<Mood>(context, 0, moods) {
 
-
     //inflate layout свернутого списка
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val binding = ItemSpinnerBinding.inflate(LayoutInflater.from(context), parent, false)
@@ -23,7 +22,6 @@ class SpinnerCustomAdapter(context: Context, val moods: Array<Mood>) :
 
     //inflate layout развернутого списка
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-
         val binding = ItemSpinnerDroppedBinding.inflate(LayoutInflater.from(context), parent, false)
         binding.moodView.setImageResource(moods[position].iconRes)
         binding.moodText.text = context.getString(moods[position].description)

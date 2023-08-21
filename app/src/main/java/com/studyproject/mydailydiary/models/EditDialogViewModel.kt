@@ -12,11 +12,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EditDialogViewModel @Inject constructor(private val diaryRep : DiaryRepository) : ViewModel() {
+class EditDialogViewModel @Inject constructor(private val diaryRep: DiaryRepository) : ViewModel() {
 
     //хранилище списка дневника
     val diaryList = MutableLiveData<ArrayList<DiaryItem>>()
+    val diaryNotifyList = MutableLiveData<ArrayList<DiaryItem>>()
     val diaryItem = MutableLiveData<DiaryItem>()
+
 
     //новый или измененный обьект из Диалога
     val diary_mesage: MutableLiveData<DiaryItem> by lazy {
@@ -65,11 +67,19 @@ class EditDialogViewModel @Inject constructor(private val diaryRep : DiaryReposi
     fun getAllDiary() = viewModelScope.launch(Dispatchers.IO) {
         //postvalue потоконебезопасно, для работы не в ui потоке
         //для UI потока используется value
-        diaryList.postValue(diaryRep.getDiary())
+        val list = diaryRep.getDiary()
+        val notifyList = arrayListOf<DiaryItem>()
+        diaryList.postValue(list)
+
+        list.forEach {
+            if (it.notification == true)
+                notifyList.add(it)
+        }
+        diaryNotifyList.postValue(notifyList)
     }
 
-    fun getDiaryItemByID(id: Long){
-        viewModelScope.launch(Dispatchers.IO){
+    fun getDiaryItemByID(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
             diaryItem.postValue(diaryRep.getDiaryItemByID(id))
         }
     }
@@ -79,6 +89,23 @@ class EditDialogViewModel @Inject constructor(private val diaryRep : DiaryReposi
             diaryItem.forEach {
                 diaryRep.delDiary(it)
             }
+            //если включена мгновенная работа с FireBase
+            if (getUseFirebase()) {
+                delDiaryFromFireBase(diaryItem)
+            }
+            //обновляем view вызовом getNotes
+            getAllDiary()
+        }
+    }
+
+
+    fun delDiary(diaryItem: DiaryItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+                diaryRep.delDiary(diaryItem)
+            //если включена мгновенная работа с FireBase
+            if (getUseFirebase()) {
+                delDiaryFromFireBase(diaryItem)
+            }
             //обновляем view вызовом getNotes
             getAllDiary()
         }
@@ -86,6 +113,9 @@ class EditDialogViewModel @Inject constructor(private val diaryRep : DiaryReposi
 
     fun addDiaryItem(item: DiaryItem) = viewModelScope.launch(Dispatchers.IO) {
         diaryRep.addDiary(item)
+        if (getUseFirebase()) {
+            setDiaryToFireBase(item)
+        }
         //обновляем view вызовом getNotes
         getAllDiary()
     }

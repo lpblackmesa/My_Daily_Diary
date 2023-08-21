@@ -53,7 +53,6 @@ class ItemRecyclerDiaryItemHolder private constructor(val binding: ItemRecyclerD
                 val dp20 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20F, this.root.context.resources.displayMetrics).toInt()
                 val dp5 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5F, this.root.context.resources.displayMetrics).toInt()
 
-
                 item.data.doing?.forEach {
                     val icon = ImageView(binding.root.context)
                     icon.setImageResource(Doing.values()[it].iconRes)
@@ -62,8 +61,8 @@ class ItemRecyclerDiaryItemHolder private constructor(val binding: ItemRecyclerD
                     iconGroup.addView(icon,LinearLayout.LayoutParams(dp20,dp20))
                     iconGroup.addView(divider,LinearLayout.LayoutParams(dp5,dp5))
                 }
-                time.setText(SimpleDateFormat("HH:mm").format(item.data.date))
-                text.setText(item.data.text)
+                time.text = SimpleDateFormat("HH:mm").format(item.data.date)
+                text.text = item.data.text
             }
         }
         itemView.setOnClickListener {

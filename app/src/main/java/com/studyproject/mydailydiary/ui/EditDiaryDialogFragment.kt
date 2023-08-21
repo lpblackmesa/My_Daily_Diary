@@ -3,7 +3,6 @@ package com.studyproject.mydailydiary.ui
 import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Button
@@ -31,16 +30,14 @@ import java.util.Calendar
 class EditDiaryDialogFragment : DialogFragment() {
 
     private var binding: DialogfragmentEditBinding? = null
-    private var date : Long? = Calendar.getInstance().timeInMillis
-
+    private var date: Long? = Calendar.getInstance().timeInMillis
     //список всех чипов
     private val chipList = ArrayList<Chip>()
-
     private val diaryModel: EditDialogViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         //inflate диалогового фрагмента
-        binding = DialogfragmentEditBinding.inflate(LayoutInflater.from(context))
+        binding = DialogfragmentEditBinding.inflate(layoutInflater)
 
         return activity?.let { _ ->
             //подключаем кастомный Spinner адаптер к Spinner с двумя разными layout
@@ -54,15 +51,11 @@ class EditDiaryDialogFragment : DialogFragment() {
             //устанавливаем текущее время
             binding?.dateText?.text = SimpleDateFormat("EEEE , dd MMMM yyyy  HH:mm").format(date)
 
-
-//спиннер листенер
+            //спиннер листенер
             binding?.spinner?.onItemSelectedListener = object :
                 AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                }
-
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-                }
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {}
+                override fun onNothingSelected(p0: AdapterView<*>?) {}
             }
 
             //создаем программно chip, сколько есть ENUM занятий
@@ -94,7 +87,6 @@ class EditDiaryDialogFragment : DialogFragment() {
             }
 
             //создание диалога
-
             val dialog: AlertDialog = AlertDialog.Builder(requireContext())
                 .setView(binding?.root)
                 .setPositiveButton(R.string.add, null)
@@ -108,9 +100,9 @@ class EditDiaryDialogFragment : DialogFragment() {
             //Получаем АГРУМЕНТЫ для получения типа диалога
             val showMode = arguments?.getString(Keys.CREATE.KEY) ?: Keys.CREATE.VALUE
             var diaryItem: DiaryItem? = null
+
             //получаем обьект для отображения
             // получаем данные и заполняем фрагмент
-
             if (Build.VERSION.SDK_INT >= 33) { // TIRAMISU
                 diaryItem = arguments?.getParcelable("ITEM", DiaryItem::class.java)
             } else {
@@ -133,10 +125,6 @@ class EditDiaryDialogFragment : DialogFragment() {
                         false
                     )
                     diaryModel.diary_mesage.value = newItem
-                    //если включена мгновенная работа с FireBase
-                    if (diaryModel.getUseFirebase()) {
-                        diaryModel.setDiaryToFireBase(newItem)
-                    }
                 }
                 dialog.cancel()
             }
@@ -162,43 +150,37 @@ class EditDiaryDialogFragment : DialogFragment() {
                         positiveButton.isVisible = false
                         setDataToFragment(diaryItem, false)
                     }
-
                     Keys.EDIT.VALUE -> {
                         date = diaryItem.date
                         editButton.isVisible = false
                         setDataToFragment(diaryItem, true)
                     }
-
                 }
             }
-
-
+            //если текст пустой - блокируем кнопку добавить
+            if (binding?.messageEdit?.text?.isBlank() == true) {
+                positiveButton.isEnabled = false
+            }
             binding?.let {
                 it.messageEdit.addTextChangedListener { edit ->
-                    //если текст пустой - блокируем кнопку добавить
                     positiveButton.isEnabled = edit?.isBlank() == false
                 }
             }
-
-
             dialog
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
-
     private fun setDataToFragment(item: DiaryItem, enabled: Boolean) {
-
         //заполнение фрагмента данными
         binding?.let {
             it.dateText.text = SimpleDateFormat("EEEE , dd MMMM yyyy  HH:mm").format(item.date)
-            it.spinner.setSelection(item.mood?:0)
+            it.spinner.setSelection(item.mood ?: 0)
             it.spinner.isEnabled = enabled
             it.messageEdit.setText(item.text)
             it.messageEdit.isEnabled = enabled
             it.chipGroup2.isClickable = enabled
             it.chipGroup.isClickable = enabled
         }
-
         chipList.forEach {
             it.isClickable = enabled
         }

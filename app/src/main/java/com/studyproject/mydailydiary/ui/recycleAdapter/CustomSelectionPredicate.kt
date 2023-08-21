@@ -7,18 +7,12 @@ import com.studyproject.mydailydiary.data.HolderType
 //RecyclerView или нет
 class CustomSelectionPredicate(private val adapter: ItemDiaryAdapter): SelectionTracker
 .SelectionPredicate<Long>() {
-    override fun canSelectMultiple(): Boolean {
-        return true
-    }
+    override fun canSelectMultiple() = true
 
     override fun canSetStateForKey(key: Long, nextState: Boolean): Boolean {
         //если item - заголовок, запрещаем его выделение
         val item = adapter.currentList.find { it.id == key }
         return  (item?.type != HolderType.HEADER )
     }
-
-    override fun canSetStateAtPosition(position: Int, nextState: Boolean): Boolean {
-
-        return true
-    }
+    override fun canSetStateAtPosition(position: Int, nextState: Boolean) = true
 }

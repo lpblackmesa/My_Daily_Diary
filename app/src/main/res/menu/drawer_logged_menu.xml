@@ -16,6 +16,7 @@
         <item
             android:id="@+id/useFirebase"
             android:title="@string/use_firebase"
+
             app:actionViewClass="androidx.appcompat.widget.SwitchCompat" />
 
         <item
