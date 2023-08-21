@@ -16,6 +16,7 @@ class EditDialogViewModel @Inject constructor(private val diaryRep : DiaryReposi
 
     //хранилище списка дневника
     val diaryList = MutableLiveData<ArrayList<DiaryItem>>()
+    val diaryItem = MutableLiveData<DiaryItem>()
 
     //новый или измененный обьект из Диалога
     val diary_mesage: MutableLiveData<DiaryItem> by lazy {
@@ -65,6 +66,12 @@ class EditDialogViewModel @Inject constructor(private val diaryRep : DiaryReposi
         //postvalue потоконебезопасно, для работы не в ui потоке
         //для UI потока используется value
         diaryList.postValue(diaryRep.getDiary())
+    }
+
+    fun getDiaryItemByID(id: Long){
+        viewModelScope.launch(Dispatchers.IO){
+            diaryItem.postValue(diaryRep.getDiaryItemByID(id))
+        }
     }
 
     fun delDiary(diaryItem: ArrayList<DiaryItem>) {

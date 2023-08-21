@@ -22,6 +22,6 @@ interface DiaryDAO {
     suspend fun getDiary(): List<DiaryItemEntity>
 
     @Query("SELECT * FROM DiaryItem WHERE Date = :date ")
-    suspend fun getDiaryItem(date: Long?): DiaryItemEntity
+    suspend fun getDiaryItem(date: Long?): DiaryItemEntity?
 
 }

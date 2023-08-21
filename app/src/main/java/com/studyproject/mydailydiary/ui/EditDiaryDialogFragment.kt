@@ -150,6 +150,7 @@ class EditDiaryDialogFragment : DialogFragment() {
                 }
             }
             editButton.isVisible = false
+
             if (diaryItem != null) {
                 //заполнение фрагмента данными, если они есть
                 when (showMode) {

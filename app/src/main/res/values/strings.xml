@@ -63,6 +63,8 @@
     <string name="rewrite_warning">Warning</string>
     <string name="firebase_rewrite_warning">You can loose your data, if you didn\'t synchronise it before.\nYou may synchronise data before. Continue?</string>
     <string name="yes">Yes</string>
+    <string name="select_date">Select date</string>
+    <string name="select_time">Select time</string>
 
 
 </resources>

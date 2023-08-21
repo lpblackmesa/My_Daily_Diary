@@ -102,6 +102,7 @@ class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedLis
     //получение ответа от запроса аутентификации
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
             //получаем логи аутентификации
             val response = IdpResponse.fromResultIntent(result.data)
 

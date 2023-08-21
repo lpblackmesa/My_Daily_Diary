@@ -14,7 +14,9 @@ import javax.inject.Inject
 
 
 class DiaryRepository @Inject constructor(
-    private val diaryDAO: DiaryDAO, private val database: FirebaseDatabase
+    private val diaryDAO: DiaryDAO
+    , private val database: FirebaseDatabase
+    , private val auth : FirebaseAuth
 ) {
 
 
@@ -22,7 +24,7 @@ class DiaryRepository @Inject constructor(
         //создание пустого списка DiaryItem
         val arrayDiaryItem: ArrayList<DiaryItem> = arrayListOf()
         //если есть залогиненый пользователь
-        FirebaseAuth.getInstance().currentUser?.let { user ->
+        auth.currentUser?.let { user ->
             //заходим в папку пользователя
             val myRef = database.getReference(user.uid)
             //получение с ожиданием результата
@@ -41,7 +43,7 @@ class DiaryRepository @Inject constructor(
 
     //запись массива данных в Firebase
     suspend fun setDiaryToFireBase(diary: ArrayList<DiaryItem>) {
-        FirebaseAuth.getInstance().currentUser?.let {
+        auth.currentUser?.let {
             val myRef = database.getReference(it.uid)
 
             val map = emptyMap<String, DiaryItem>().toMutableMap()
@@ -57,7 +59,7 @@ class DiaryRepository @Inject constructor(
     //запись одного item в Firebase
     suspend fun setDiaryToFireBase(diaryItem: DiaryItem) {
         //если есть Юзер
-        FirebaseAuth.getInstance().currentUser?.let { user ->
+        auth.currentUser?.let { user ->
             //записываем в ветку Айди Юзер
             val myRef = database.getReference(user.uid)
             val myKey = diaryItem.date?.toString()
@@ -68,7 +70,7 @@ class DiaryRepository @Inject constructor(
     //удаление одного item в Firebase
     suspend fun delDiaryFromFireBase(diaryItem: DiaryItem) {
         //если есть Юзер
-        FirebaseAuth.getInstance().currentUser?.let { user ->
+        auth.currentUser?.let { user ->
             //записываем в ветку Айди Юзер
             val myRef = database.getReference(user.uid)
             val myKey = diaryItem.date?.toString()
@@ -77,7 +79,7 @@ class DiaryRepository @Inject constructor(
     }
 
     suspend fun delDiaryFromFireBase(diary: ArrayList<DiaryItem>) {
-        FirebaseAuth.getInstance().currentUser?.let {
+        auth.currentUser?.let {
             val myRef = database.getReference(it.uid)
 
             val map = emptyMap<String, Any?>().toMutableMap()
@@ -104,14 +106,26 @@ class DiaryRepository @Inject constructor(
         } as? ArrayList<DiaryItem>) ?: arrayListOf()
     }
 
+    suspend fun getDiaryItemByID(id: Long): DiaryItem {
+        return diaryDAO.getDiaryItem(id).let {
+            DiaryItem(
+                it?.date,
+                it?.mood,
+                it?.doing,
+                it?.text,
+                it?.notification
+            )
+        } ?: DiaryItem(0, 0, arrayListOf(), "", false)
+    }
+
     suspend fun getDiaryItem(diaryItem: DiaryItem): DiaryItem {
         return diaryDAO.getDiaryItem(diaryItem.date).let {
             DiaryItem(
-                it.date,
-                it.mood,
-                it.doing,
-                it.text,
-                it.notification
+                it?.date,
+                it?.mood,
+                it?.doing,
+                it?.text,
+                it?.notification
             )
         } ?: DiaryItem(0, 0, arrayListOf(), "", false)
     }
