@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:showIn="navigation_view">
+    <group>
+
+
+        <item
+            android:id="@+id/setToFirebase"
+            android:title="@string/set_data_to_firebase" />
+        <item
+            android:id="@+id/getDataFromFirebase"
+            android:title="@string/get_data_from_firebase" />
+
+        <item
+            android:id="@+id/useFirebase"
+            android:title="@string/use_firebase"
+
+            app:actionViewClass="androidx.appcompat.widget.SwitchCompat" />
+
+        <item
+            android:id="@+id/settingsFragment"
+            android:title="@string/settings" />
+
+        <item
+            android:id="@+id/logout"
+            android:title="@string/log_out" />
+    </group>
+</menu>

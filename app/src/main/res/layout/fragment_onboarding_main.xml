@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="@color/default_background">
+
+    <TextView
+        android:id="@+id/mainText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textSize="@dimen/splash_text_size_40sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.12" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/circleIndicator"
+        app:layout_constraintTop_toBottomOf="@id/mainText" />
+
+    <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+        android:id="@+id/circleIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="@dimen/onboarding_margin_25dp"
+        app:dotsColor="@color/purple_500"
+        app:dotsStrokeColor="@color/purple_500"
+        app:dotsCornerRadius="@dimen/dotsCornerRadius_8dp"
+        app:dotsSize="@dimen/dotsSize_16dp"
+        app:dotsSpacing="@dimen/dotsSpacing_4dp"
+        app:dotsStrokeWidth="@dimen/dotsStrokeWidth_2dp" />
+
+    <TextView
+        android:id="@+id/backText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/onboarding_button_padding_15dp"
+        android:text="@string/back"
+        android:textSize="@dimen/drawer_text_size_24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBaseline_toBottomOf="@id/circleIndicator" />
+    <TextView
+        android:id="@+id/nextText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingEnd="@dimen/onboarding_button_padding_15dp"
+        android:text="@string/next"
+        android:textSize="@dimen/drawer_text_size_24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBaseline_toBottomOf="@id/circleIndicator"  />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

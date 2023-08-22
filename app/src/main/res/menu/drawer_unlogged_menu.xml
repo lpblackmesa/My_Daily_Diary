@@ -4,10 +4,12 @@
     tools:showIn="navigation_view">
     <group>
         <item
-            android:id="@+id/item1"
-            android:title="Item" />
+            android:id="@+id/login"
+            android:title="@string/login" />
+
         <item
-            android:id="@+id/item2"
-            android:title="Item" />
+            android:id="@+id/settingsFragment"
+            android:title="@string/settings" />
+
     </group>
 </menu>

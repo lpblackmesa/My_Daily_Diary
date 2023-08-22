@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/cardview_margin_5dp"
+    app:cardCornerRadius="@dimen/card_radius_15dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/frame">
+
+
+        <ImageView
+            android:id="@+id/icon_notify"
+            android:layout_width="@dimen/mood_icon_35dp"
+            android:layout_height="@dimen/mood_icon_35dp"
+            android:layout_marginStart="@dimen/item_holder_margin_10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/notifications" />
+
+        <ImageView
+            android:id="@+id/selectIcon"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_marginEnd="@dimen/item_holder_margin_10dp"
+            android:layout_width="@dimen/mood_icon_35dp"
+            android:layout_height="@dimen/mood_icon_35dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/checkmark" />
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/text_item_height_40dp"
+            android:layout_margin="@dimen/item_holder_margin_10dp"
+            android:ellipsize="end"
+            android:lines="2"
+            android:maxLength="100"
+            tools:text="notesssssssss234543sssssssss67566656453ssssssssssssss4345345345345345ssssssssssssssssssss1234124235ssssssssss"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/time"
+            app:layout_constraintStart_toEndOf="@id/icon_notify"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/item_holder_margin_10dp"
+            android:layout_marginEnd="@dimen/item_holder_margin_10dp"
+            tools:text="10:00"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -8,14 +8,14 @@
     android:id="@+id/header_drawer">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/userText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="20dp"
-        android:text="TextView"
+        android:layout_marginStart="@dimen/drawer_header_margin_10dp"
+        android:layout_marginBottom="@dimen/drawer_header_margin_10dp"
+        tools:text="@string/user"
         android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:textSize="@dimen/drawer_text_size_24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -23,9 +23,10 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
+        android:layout_marginStart="@dimen/drawer_header_margin_10dp"
+        app:layout_constraintBottom_toTopOf="@+id/userText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/menu_book" />
+        app:srcCompat="@drawable/menu_book_white" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
