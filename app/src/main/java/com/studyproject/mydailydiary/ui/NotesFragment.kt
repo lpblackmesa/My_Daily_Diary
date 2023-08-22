@@ -79,13 +79,16 @@ class NotesFragment : Fragment(), HolderItemClickListener {
         }
         R.id.action_edit -> {
             tracker?.let {
-
                 val mainAdapter = binding?.recyclerView?.adapter as ItemDiaryAdapter
                 val selected = mainAdapter.currentList.firstOrNull { item ->
                     item.id == it.selection.first()
                 }
                 if (selected != null) {
-                    showDialogFragment(Keys.EDIT, selected.data)
+                    if (selected.type == HolderType.DIARY) {
+                        showDialogFragment(Keys.EDIT, selected.data)
+                    } else {
+                        showDialogFragment(Keys.EDIT_NOTIFY, selected.data)
+                    }
                 }
                 it.clearSelection()
             }

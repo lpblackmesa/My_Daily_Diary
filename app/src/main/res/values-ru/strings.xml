@@ -67,4 +67,5 @@
     <string name="login">Войти в аккаунт</string>
     <string name="notification_setted_to">Уведомление установлено на</string>
     <string name="started_time_is">Время начала :</string>
+    <string name="avatar">Avatar</string>
 </resources>

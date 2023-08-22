@@ -66,5 +66,6 @@
     <string name="login">Login</string>
     <string name="notification_setted_to">Notification setted to</string>
     <string name="started_time_is">Started time is</string>
+    <string name="avatar">Avatar</string>
 
 </resources>
