@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:textSize="35dp"
+        android:textSize="@dimen/splash_text_size_40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -33,34 +33,31 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="@dimen/onboarding_margin_25dp"
         app:dotsColor="@color/purple_500"
         app:dotsStrokeColor="@color/purple_500"
-        app:dotsCornerRadius="8dp"
-        app:dotsSize="16dp"
-        app:dotsSpacing="4dp"
-        app:dotsStrokeWidth="2dp" />
+        app:dotsCornerRadius="@dimen/dotsCornerRadius_8dp"
+        app:dotsSize="@dimen/dotsSize_16dp"
+        app:dotsSpacing="@dimen/dotsSpacing_4dp"
+        app:dotsStrokeWidth="@dimen/dotsStrokeWidth_2dp" />
 
     <TextView
         android:id="@+id/backText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:paddingStart="15dp"
+        android:paddingStart="@dimen/onboarding_button_padding_15dp"
         android:text="@string/back"
-        android:textSize="25dp"
+        android:textSize="@dimen/drawer_text_size_24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBaseline_toBottomOf="@id/circleIndicator" />
     <TextView
         android:id="@+id/nextText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:paddingEnd="15dp"
+        android:paddingEnd="@dimen/onboarding_button_padding_15dp"
         android:text="@string/next"
-        android:textSize="25dp"
+        android:textSize="@dimen/drawer_text_size_24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBaseline_toBottomOf="@id/circleIndicator"  />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

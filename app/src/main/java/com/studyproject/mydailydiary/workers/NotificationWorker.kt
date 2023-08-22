@@ -23,7 +23,6 @@ import com.studyproject.mydailydiary.ui.MainActivity.Companion.NOTIFICATION_TEXT
 class NotificationWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
-        Log.e("!", "WORK")
         val text = inputData.getString(NOTIFICATION_TEXT)
         val id = inputData.getLong(EXTRA_NOTIFY, 0)
         createNotificationChannel()

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="spinner_image_50dp">50dp</dimen>
+    <dimen name="margin_10dp">10dp</dimen>
+    <dimen name="spinner_image_70dp">70dp</dimen>
+    <dimen name="cardview_margin_5dp">5dp</dimen>
+    <dimen name="card_radius_15dp">15dp</dimen>
+    <dimen name="mood_icon_35dp">35dp</dimen>
+    <dimen name="mood_icon_margin_start_25dp">25dp</dimen>
+    <dimen name="mood_icon_margin_top_5dp">5dp</dimen>
+    <dimen name="item_holder_margin_10dp">10dp</dimen>
+    <dimen name="icon_group_margin_end_60dp">60dp</dimen>
+    <dimen name="text_item_height_40dp">40dp</dimen>
+    <dimen name="item_badge_width_10dp">10dp</dimen>
+    <dimen name="item_badge_height_90dp">90dp</dimen>
+    <dimen name="item_header_margin_top_15dp">15dp</dimen>
+    <dimen name="header_text_size_16sp">16sp</dimen>
+    <dimen name="onboarding_image_270dp">270dp</dimen>
+    <dimen name="onboarding_margin_25dp">25dp</dimen>
+    <dimen name="drawer_header_margin_10dp">10dp</dimen>
+    <dimen name="drawer_text_size_24sp">24sp</dimen>
+    <dimen name="splash_image_120dp">120dp</dimen>
+    <dimen name="splash_text_size_40sp">40sp</dimen>
+    <dimen name="dotsCornerRadius_8dp">8dp</dimen>
+    <dimen name="dotsSize_16dp">16dp</dimen>
+    <dimen name="dotsSpacing_4dp">4dp</dimen>
+    <dimen name="dotsStrokeWidth_2dp">2dp</dimen>
+    <dimen name="onboarding_button_padding_15dp">15dp</dimen>
+    <dimen name="floating_button_margin_16dp">16dp</dimen>
+    <dimen name="drawer_width_250dp">250dp</dimen>
+    <dimen name="dialogfragment_margin_8dp">8dp</dimen>
+    <dimen name="notification_check_textsize_20sp">20sp</dimen>
+    <dimen name="notification_button_size_25dp">25dp</dimen>
+    <dimen name="notification_textinput_margin_15dp">15dp</dimen>
+    <dimen name="chipgroup_height_200dp">200dp</dimen>
+</resources>

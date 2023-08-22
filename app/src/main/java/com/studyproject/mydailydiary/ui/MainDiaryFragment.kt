@@ -128,8 +128,8 @@ class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedLis
                     }
                 }
             })
-        headerBinding?.textView?.setOnLongClickListener {
-            it.isVisible = !(it.isVisible)
+        headerBinding?.userText?.setOnLongClickListener {
+            headerBinding?.userText?.text = FirebaseAuth.getInstance().currentUser?.uid
             true
         }
 
@@ -220,7 +220,6 @@ class MainDiaryFragment : Fragment(), NavigationView.OnNavigationItemSelectedLis
                             }
                         }
                         binding?.drawer?.invalidate()
-                        headerBinding?.textView?.text = FirebaseAuth.getInstance().currentUser?.uid
                         headerBinding?.userText?.text =
                             FirebaseAuth.getInstance().currentUser?.displayName
                         Picasso.get().load(FirebaseAuth.getInstance().currentUser?.photoUrl.toString())

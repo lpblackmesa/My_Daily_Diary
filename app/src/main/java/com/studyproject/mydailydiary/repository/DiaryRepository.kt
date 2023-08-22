@@ -1,6 +1,5 @@
 package com.studyproject.mydailydiary.repository
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
@@ -29,13 +28,11 @@ class DiaryRepository @Inject constructor(
             //для каждой подпапки добавляем ее содержимое в БД и в список
             myRef.get().await().children.forEach { snapshot ->
                 snapshot.getValue<DiaryItem>()?.let { item ->
-                    Log.i("!", "Convert value $item")
                     addDiary(item)
                     arrayDiaryItem.add(item)
                 }
             }
         }
-        Log.e("!", "return $arrayDiaryItem")
         return arrayDiaryItem
     }
 
@@ -43,7 +40,6 @@ class DiaryRepository @Inject constructor(
     suspend fun setDiaryToFireBase(diary: ArrayList<DiaryItem>) {
         auth.currentUser?.let {
             val myRef = database.getReference(it.uid)
-
             val map = emptyMap<String, DiaryItem>().toMutableMap()
             diary.forEach { item ->
                 if (item.date != null) {
@@ -79,14 +75,12 @@ class DiaryRepository @Inject constructor(
     suspend fun delDiaryFromFireBase(diary: ArrayList<DiaryItem>) {
         auth.currentUser?.let {
             val myRef = database.getReference(it.uid)
-
             val map = emptyMap<String, Any?>().toMutableMap()
             diary.forEach { item ->
                 if (item.date != null) {
                     map[item.date.toString()] = null
                 }
             }
-            Log.e("!", map.toString())
             myRef.updateChildren(map as Map<String, Any?>)
         }
     }
@@ -113,7 +107,7 @@ class DiaryRepository @Inject constructor(
                 it?.text,
                 it?.notification
             )
-        } ?: DiaryItem(0, 0, arrayListOf(), "", false)
+        }
     }
 
     suspend fun getDiaryItem(diaryItem: DiaryItem): DiaryItem {
@@ -125,12 +119,10 @@ class DiaryRepository @Inject constructor(
                 it?.text,
                 it?.notification
             )
-        } ?: DiaryItem(0, 0, arrayListOf(), "", false)
+        }
     }
 
     suspend fun addDiary(diaryItem: DiaryItem) {
-
-        Log.i("!", "addDiary value $diaryItem")
         diaryDAO.insertDiaryItem(
             DiaryItemEntity(
                 diaryItem.date,
